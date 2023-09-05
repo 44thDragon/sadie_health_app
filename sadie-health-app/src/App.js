@@ -1,43 +1,165 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-  const [inputValue, setInputValue] = useState('');
+  const [glucoseReading, setGlucoseReading] = useState('');
+  const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
+  const [changedField, setChangedField] = useState(null);
+  const [mostRecentGlucose, setMostRecentGlucose] = useState(null);
 
-  const handleInputChange = (event) => {
-    const newValue = event.target.value;
-    setInputValue(newValue);
+  useEffect(() => {
+    async function fetchMostRecentGlucose() {
+      try {
+        const response = await axios.get('/api/glucose-readings/most-recent');
+        if (response.data) {
+          setMostRecentGlucose(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching most recent glucose reading:', error);
+      }
+    }
+
+    fetchMostRecentGlucose();
+  }, []);
+
+  const handleGlucoseChange = (event) => {
+    setGlucoseReading(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleFoodOptionClick = (value) => {
+    setFoodSameAsYesterday(value);
+    setChangedField(null); // Reset changedField when option changes
+  };
+
+  const handleChangedFieldClick = (field) => {
+    setChangedField(field);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Validate and process the input value (e.g., check if it's between 1 and 900)
-    if (inputValue >= 1 && inputValue <= 900) {
-      alert(`You entered: ${inputValue}`);
-    } else {
-      alert('Please enter a number between 1 and 900.');
+    try {
+      const currentDatetime = new Date();
+      const petName = 'Sadie';
+
+      const response = await axios.post('/api/glucose-readings/submit', {
+        glucose_reading: glucoseReading,
+        dt_stamp: currentDatetime,
+        pet_name: petName,
+      });
+
+      if (response.status === 201) {
+        alert('Glucose reading stored successfully');
+        setMostRecentGlucose({
+          glucose_reading: glucoseReading,
+          dt_stamp: currentDatetime,
+        });
+      } else {
+        alert('An error occurred while storing glucose reading');
+      }
+    } catch (error) {
+      alert('An error occurred while storing glucose reading');
+      console.error(error);
     }
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Hello, World!</h1>
-        <p>Welcome to my React.js app on sadie.io</p>
+        <h1 className="app-title">
+          <span role="img" aria-label="dog-emoji">
+            🐾 Woof! Woof!
+          </span>
+          {' '}
+          Welcome to
+          {' '}
+          <span className="health-text">Sadie Health</span>
+        </h1>
+      </header>
+      <main className="App-main">
         <form onSubmit={handleSubmit}>
-          <label>
-            Enter a number between 1 and 900:
+          {/* Glucose Reading */}
+          <div className="label-container">
+            <label>What was Sadie's glucose reading?</label>
             <input
               type="number"
-              value={inputValue}
-              onChange={handleInputChange}
-              min={1}
-              max={900}
-            />
-          </label>
-          <button type="submit">Submit</button>
+              value={glucoseReading}
+              onChange={handleGlucoseChange}
+              min="0"
+              max="600"
+              required
+            /> mg/dl
+          </div>
+
+          {/* Display most recent glucose reading */}
+          {mostRecentGlucose && (
+            <div className="most-recent">
+              <p>Most Recent Glucose Reading:</p>
+              <p>{mostRecentGlucose.glucose_reading} mg/dl</p>
+              <p>Recorded on: {new Date(mostRecentGlucose.dt_stamp).toLocaleString()}</p>
+            </div>
+          )}
+
+          {/* Food Options */}
+          <div className="question-container">
+            <p>Is the food brand and serving size the same as the previous meal?</p>
+            <div className="options-container">
+              <button
+                type="button"
+                className={`option-button ${
+                  foodSameAsYesterday === 'yes' ? 'active' : ''
+                }`}
+                onClick={() => handleFoodOptionClick('yes')}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                className={`option-button ${
+                  foodSameAsYesterday === 'no' ? 'active' : ''
+                }`}
+                onClick={() => handleFoodOptionClick('no')}
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          {/* Additional Fields */}
+          {foodSameAsYesterday === 'no' && (
+            <div className="additional-fields">
+              <p>What changed?</p>
+              <div className="options-container">
+                <button
+                  type="button"
+                  className={`option-button ${
+                    changedField === 'food' ? 'active' : ''
+                  }`}
+                  onClick={() => handleChangedFieldClick('food')}
+                >
+                  Food
+                </button>
+                <button
+                  type="button"
+                  className={`option-button ${
+                    changedField === 'servingSize' ? 'active' : ''
+                  }`}
+                  onClick={() => handleChangedFieldClick('servingSize')}
+                >
+                  Serving Size
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button type="submit" className="paw-button">
+            <FontAwesomeIcon icon={faPaw} className="paw-icon" />
+          </button>
         </form>
-      </header>
+      </main>
     </div>
   );
 }
