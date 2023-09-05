@@ -7,7 +7,7 @@ const dbConnection = require('../dbConnection');
 router.post('/submit', (req, res) => {
   const { glucose_reading, dt_stamp, pet_name } = req.body;
 
-  const query = 'INSERT INTO glucose_readings (glucose_level, dt_stamp, pet_name) VALUES (?, ?, ?)';
+  const query = 'INSERT INTO glucose_readings (glucose_reading, dt_stamp, pet_name) VALUES (?, ?, ?)';
   const values = [glucose_reading, dt_stamp, pet_name];
 
   dbConnection.query(query, values, (error, results) => {

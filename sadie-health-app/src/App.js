@@ -10,6 +10,7 @@ function App() {
   const [changedField, setChangedField] = useState(null);
   const [mostRecentGlucose, setMostRecentGlucose] = useState(null);
 
+  
   useEffect(() => {
     async function fetchMostRecentGlucose() {
       try {
@@ -24,7 +25,7 @@ function App() {
 
     fetchMostRecentGlucose();
   }, []);
-
+  
   const handleGlucoseChange = (event) => {
     setGlucoseReading(event.target.value);
   };

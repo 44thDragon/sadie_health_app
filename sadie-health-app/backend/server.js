@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use('/api/glucose-readings/submit', glucoseReadingsRoutes);
+app.use('/api/glucose-readings', glucoseReadingsRoutes);
 
 // New route for most recent glucose reading
 app.get('/api/glucose-readings/most-recent', (req, res) => {
