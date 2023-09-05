@@ -4,13 +4,15 @@ import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 
+
+
 function App() {
   const [glucoseReading, setGlucoseReading] = useState('');
   const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
   const [changedField, setChangedField] = useState(null);
   const [mostRecentGlucose, setMostRecentGlucose] = useState(null);
-
   
+
   useEffect(() => {
     async function fetchMostRecentGlucose() {
       try {
@@ -23,7 +25,10 @@ function App() {
       }
     }
 
+   
+
     fetchMostRecentGlucose();
+    
   }, []);
   
   const handleGlucoseChange = (event) => {
@@ -100,6 +105,9 @@ function App() {
               <p>Most Recent Glucose Reading:</p>
               <p>{mostRecentGlucose.glucose_reading} mg/dl</p>
               <p>Recorded on: {new Date(mostRecentGlucose.dt_stamp).toLocaleString()}</p>
+                  {/* Add console logs here */}
+                  {console.log('dt_stamp:', mostRecentGlucose.dt_stamp)}
+                  {console.log('Converted date:', new Date(mostRecentGlucose.dt_stamp))}
             </div>
           )}
 
@@ -160,9 +168,17 @@ function App() {
             <FontAwesomeIcon icon={faPaw} className="paw-icon" />
           </button>
         </form>
+       {/* Chart */}
+       
+                  
+
       </main>
     </div>
+    
+    
+    
   );
+  
 }
 
 export default App;

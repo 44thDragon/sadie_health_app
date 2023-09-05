@@ -128,3 +128,9 @@ input[type="number"] {
   font-family: 'Arial', sans-serif;
   color: #fff;
 }
+
+
+.chart-container {
+  width: 80%;
+  margin: 2rem auto;
+}

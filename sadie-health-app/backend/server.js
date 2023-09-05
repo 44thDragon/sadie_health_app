@@ -21,6 +21,7 @@ app.get('/api/glucose-readings/most-recent', (req, res) => {
     LIMIT 1
   `;
 
+
   dbConnection.query(query, (error, results) => {
     if (error) {
       console.error('Error fetching most recent glucose reading:', error);
@@ -32,6 +33,23 @@ app.get('/api/glucose-readings/most-recent', (req, res) => {
       } else {
         res.status(404).json({ message: 'No glucose readings found' });
       }
+    }
+  });
+});
+
+
+app.get('/api/glucose-readings/all', (req, res) => {
+  const query = `
+    SELECT glucose_reading, dt_stamp
+    FROM glucose_readings
+    ORDER BY dt_stamp ASC
+  `;
+  dbConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching all glucose readings:', error);
+      res.status(500).json({ message: 'An error occurred' });
+    } else {
+      res.status(200).json(results); // Return the array of glucose readings
     }
   });
 });
