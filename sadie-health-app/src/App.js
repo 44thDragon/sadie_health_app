@@ -209,7 +209,17 @@ function App() {
               <label>Describe the food change:</label>
               <textarea
                 value={foodChangeDescription}
-                onChange={(event) => setFoodChangeDescription(event.target.value)}
+                onChange={(event) => {
+                  const input = event.target.value.slice(0, 20);
+                  setFoodChangeDescription(
+                    input
+                      .toLowerCase()
+                      .split(' ')
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')
+                  );
+                }}
+                
                 rows="4"
                 cols="50"
                 required
