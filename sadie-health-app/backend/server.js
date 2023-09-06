@@ -72,6 +72,30 @@ app.get('/api/food/all', (req, res) => {
   });
 });
 
+// New route for most recent food brand and serving size
+app.get('/api/food/most-recent', (req, res) => {
+  const query = `
+    SELECT brand, serving_size
+    FROM pet_food
+    ORDER BY created_at DESC
+    LIMIT 1
+  `;
+
+
+  dbConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching most recent glucose reading:', error);
+      res.status(500).json({ message: 'An error occurred' });
+    } else {
+      if (results.length > 0) {
+        const mostRecentReading = results[0];
+        res.status(200).json(mostRecentReading);
+      } else {
+        res.status(404).json({ message: 'No glucose readings found' });
+      }
+    }
+  });
+});
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
