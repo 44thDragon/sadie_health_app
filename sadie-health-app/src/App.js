@@ -66,12 +66,18 @@ function App() {
   const handleFoodOptionClick = (value) => {
     setFoodSameAsYesterday(value);
     setChangedField(null); // Reset changedField when the option changes
-    if (value === 'yes') {
-      // Set foodChangeDescription to recentFoodEntry.brand if the user selects "Yes"
+    if (value === 'no' && changedField === 'servingSize') {
+      // User selects "No" and "Serving Size," set foodChangeDescription to recentFoodEntry.brand
       setFoodChangeDescription(recentFoodEntry.brand);
+    } else {
+      // Default case, set foodChangeDescription to an empty string
+      setFoodChangeDescription('');
     }
   };
+  
 
+
+  
   const handleChangedFieldClick = (field) => {
     setChangedField(field);
   };
@@ -83,22 +89,34 @@ function App() {
     try {
       const currentDatetime = new Date();
       const petName = 'Sadie';
-      const servingSize = 215;
       const servedAt = currentDatetime;
+  
       // Prepare the data to be sent to the server
-      const requestData = {
+      let requestData = {
         glucose_reading: glucoseReading,
         dt_stamp: currentDatetime,
         pet_name: petName,
         food: {
-          brand: foodChangeDescription, // Assuming the brand is entered in the description field
-          serving_size: servingSize, // Add serving size if needed
-          served_at: servedAt
+          served_at: servedAt,
         },
       };
-
+  
+      if (changedField === 'food') {
+        // User selected "Food"
+        requestData.food.brand = foodChangeDescription;
+        requestData.food.serving_size = recentFoodEntry.serving_size;
+      } else if (changedField === 'servingSize') {
+        // User selected "Serving Size"
+        requestData.food.brand = recentFoodEntry.brand;
+        requestData.food.serving_size = foodChangeDescription;
+      } else if (foodSameAsYesterday === 'yes') {
+        // Include recentFoodEntry.brand and serving_size if they select "Yes"
+        requestData.food.brand = recentFoodEntry.brand;
+        requestData.food.serving_size = recentFoodEntry.serving_size;
+      }
+  
       const response = await axios.post('/api/glucose-readings/submit', requestData);
-
+  
       if (response.status === 201) {
         alert('Glucose reading and food data stored successfully');
         // Update the recentGlucoseReadings state with the new reading
@@ -119,21 +137,14 @@ function App() {
       } else {
         alert('An error occurred while storing glucose reading');
       }
-
-      // If foodSameAsYesterday is "no" and a description is provided, submit the food change description too
-      if (foodSameAsYesterday === 'no' && foodChangeDescription.trim() !== '') {
-        // Submit the food change description to the server or perform any required action.
-        console.log('Food Change Description:', foodChangeDescription);
-        glucoseData.food = {
-          serving_size: servingSize, // Assuming servingSize is a state variable
-          description: foodChangeDescription,
-        };
-      }
     } catch (error) {
       alert('An error occurred while storing glucose reading');
       console.error(error);
     }
   };
+  
+  
+  
 
   return (
     <div className="App">
@@ -211,12 +222,12 @@ function App() {
             </div>
           )}
 
-          {/* Display the text box for food change description */}
-          {foodSameAsYesterday === 'no' && (
+          {/* Display the text box based on user's selection */}
+          {changedField === 'food' && (
             <div className="food-change-description">
               <label>Describe the food change:</label>
               <textarea
-                classname = "food-change-description-input"
+                className="food-change-description-input"
                 value={foodChangeDescription}
                 onChange={(event) => {
                   const input = event.target.value.slice(0, 20);
@@ -228,7 +239,30 @@ function App() {
                       .join(' ')
                   );
                 }}
-                
+                rows="4"
+                cols="50"
+                required
+              />
+            </div>
+          )}
+
+          {/* Display the text box for updating serving size */}
+          {changedField === 'servingSize' && (
+            <div className="food-change-description">
+              <label>Update serving size:</label>
+              <textarea
+                className="food-change-description-input"
+                value={foodChangeDescription}
+                onChange={(event) => {
+                  const input = event.target.value.slice(0, 20);
+                  setFoodChangeDescription(
+                    input
+                      .toLowerCase()
+                      .split(' ')
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')
+                  );
+                }}
                 rows="4"
                 cols="50"
                 required
