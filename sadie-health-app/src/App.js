@@ -18,11 +18,8 @@ function App() {
   });
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
   // Assuming served_at is a Unix timestamp
-  const [showRecentGlucose, setShowRecentGlucose] = useState(false); // State to toggle the visibility of recent glucose readings
-  const toggleRecentGlucose = () => {
-    // Toggle the visibility of recent glucose readings when the title is clicked
-    setShowRecentGlucose(!showRecentGlucose);
-  };
+ 
+  
   useEffect(() => {
     async function fetchMostRecentGlucose() {
       try {
@@ -292,20 +289,7 @@ function App() {
             <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
           </button>
         </form>
-        
-        <div className="recent-glucose-container">
-        {/* Recent Glucose Readings Accordion */}
-        <div className="accordion">
-         <div className="accordion-title" onClick={toggleRecentGlucose}>
-           Recent Glucose Readings
-           <FontAwesomeIcon
-             icon={showRecentGlucose ? 'angle-up' : 'angle-down'} // Use appropriate icons
-             className="accordion-icon"
-            />
-          </div>
-
-        {showRecentGlucose && (
-           <div className="accordion-content">
+                
         {/* Recent Glucose Reading */}
         <div className="recent-glucose">
           <div className="glucose-header">
@@ -321,11 +305,6 @@ function App() {
               </li>
             ))}
           </ul>
-        </div>
-        </div>
-        
-        )}
-        </div>
         </div>
       </main>
     </div>
