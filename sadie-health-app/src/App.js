@@ -66,6 +66,10 @@ function App() {
   const handleFoodOptionClick = (value) => {
     setFoodSameAsYesterday(value);
     setChangedField(null); // Reset changedField when the option changes
+    if (value === 'yes') {
+      // Set foodChangeDescription to recentFoodEntry.brand if the user selects "Yes"
+      setFoodChangeDescription(recentFoodEntry.brand);
+    }
   };
 
   const handleChangedFieldClick = (field) => {
@@ -162,6 +166,10 @@ function App() {
           {/* Food Options */}
           <div className="question-container">
             <p>Is the food brand and serving size the same as the previous meal?</p>
+            {/* Display the most recent food entry */}
+            {recentFoodEntry && (
+            <p>(Last Food Entry: {recentFoodEntry.serving_size}G of {recentFoodEntry.brand} - {new Date(recentFoodEntry.served_at).toLocaleString()})</p>
+            )}
             <div className="options-container">
               <button
                 type="button"
@@ -208,6 +216,7 @@ function App() {
             <div className="food-change-description">
               <label>Describe the food change:</label>
               <textarea
+                classname = "food-change-description-input"
                 value={foodChangeDescription}
                 onChange={(event) => {
                   const input = event.target.value.slice(0, 20);
@@ -227,10 +236,7 @@ function App() {
             </div>
           )}
 
-          {/* Display the most recent food entry */}
-          {recentFoodEntry && (
-            <p>Last Food Entry: {recentFoodEntry.serving_size}G of {recentFoodEntry.brand} - {new Date(recentFoodEntry.served_at).toLocaleString()} </p>
-          )}
+          
 
           {/* Submit Button */}
           <button type="submit" className="paw-button">
