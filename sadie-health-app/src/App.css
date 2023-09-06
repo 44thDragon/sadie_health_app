@@ -9,15 +9,14 @@ body {
 }
 
 .App {
-  text-align: center;
+  text-align: left;
   
 }
 
 .App-header {
   min-height: 10vh;
-  display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
@@ -27,9 +26,8 @@ body {
 
 .App-main {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
+  flex-direction: column; /* Stack sections vertically */
+  align-items: left; /* Center align the content horizontally */
 }
 
 .app-title {
@@ -41,17 +39,25 @@ body {
 
 .form-container {
   flex: 1;
-  padding-right: 20px;
-  border-right: 1px solid #ccc;
+  
+  margin-left: 40px
 }
 
 .glucose-container {
   margin-bottom: 20px;
 }
 
+.recent-glucose-container {
+  width: 100%; /* Ensure it takes the full width */
+  display: flex;
+  justify-content: flex-start; /* Align recent glucose to the left */
+  margin-top: 20px; /* Add margin for spacing between the sections */
+}
+
 .recent-glucose {
+  flex: 1; /* This will make the recent glucose container take up 50% of the available space */
   margin-top: 20px;
-  text-align: left;
+  margin-left: 40px;
 }
 
 input[type="number"] {
@@ -147,7 +153,7 @@ input[type="number"] {
 }
 
 .glucose-header {
-  text-align: center;
+  text-align: left;
 }
 .glucose-list {
   list-style: none;

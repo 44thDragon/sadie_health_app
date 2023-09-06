@@ -17,6 +17,7 @@ function App() {
     },
   });
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
+  
   // Assuming served_at is a Unix timestamp
  
   
@@ -171,6 +172,7 @@ function App() {
         </h1>
       </header>
       <main className="App-main">
+      <div className="form-container">
         <form onSubmit={handleSubmit}>
           {/* Glucose Reading */}
           <div className="label-container">
@@ -290,8 +292,15 @@ function App() {
           </button>
         </form>
                 
-        {/* Recent Glucose Reading */}
-        <div className="recent-glucose">
+       
+        </div>
+         
+
+
+        <div className="recent-glucose-container">
+
+          {/* Recent Glucose Reading */}
+         <div className="recent-glucose">
           <div className="glucose-header">
             <p>Recent Glucose Readings:</p>
           </div>
@@ -305,6 +314,8 @@ function App() {
               </li>
             ))}
           </ul>
+        </div>
+
         </div>
       </main>
     </div>
