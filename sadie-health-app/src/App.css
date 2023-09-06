@@ -186,3 +186,43 @@ input[type="number"] {
   resize: none; /* Prevent resizing */
   text-align: left;
 }
+
+
+/* Styles for the Recent Glucose Readings accordion */
+.accordion-title {
+  background-color: #007bff; /* Background color for the title */
+  color: #fff; /* Text color for the title */
+  padding: 10px; /* Spacing around the title */
+  border-radius: 5px; /* Rounded corners for the title */
+  cursor: pointer; /* Show a pointer cursor when hovering */
+  display: flex; /* Align title content horizontally */
+  justify-content: space-between; /* Space between title content */
+  align-items: center; /* Center title content vertically */
+}
+
+.accordion-title:hover {
+  background-color: #0056b3; /* Background color when hovering */
+  transition: background-color 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+.accordion-title .accordion-icon {
+  font-size: 1.2rem; /* Font size for the toggle icon */
+  transition: transform 0.3s ease-in-out; /* Smooth icon rotation transition */
+}
+
+.accordion-content {
+  display: none; /* Initially hide the content */
+  padding: 10px; /* Spacing around the content */
+  border: 1px solid #ddd; /* Border for the content */
+  border-radius: 5px; /* Rounded corners for the content */
+}
+
+/* Show content when the accordion is expanded */
+.accordion-content.show {
+  display: block;
+}
+
+/* Rotate the icon when the accordion is expanded */
+.accordion-title.active .accordion-icon {
+  transform: rotate(180deg); /* Rotate the icon 180 degrees */
+}
