@@ -164,10 +164,25 @@ input[type="number"] {
   margin-right: 8px;
 }
 
+.food-change-description {
+  text-align: left;
+}
+
+
 .food-change-description-input {
-  width: 100%; /* Adjust the width as needed */
   max-width: 200px; /* Set a maximum width */
-  padding: 5px; /* Add padding for a tidier appearance */
   font-size: 14px; /* Adjust the font size */
   resize: none; /* Prevent resizing */
+  text-align: left;
+}
+
+.food-serving-size-change-description {
+  text-align: left;
+}
+
+.food-serving-size-description-input {
+  max-width: 200px; /* Set a maximum width */
+  font-size: 14px; /* Adjust the font size */
+  resize: none; /* Prevent resizing */
+  text-align: left;
 }

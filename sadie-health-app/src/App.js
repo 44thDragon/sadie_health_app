@@ -19,7 +19,7 @@ function App() {
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
   // Assuming served_at is a Unix timestamp
  
-
+  
   useEffect(() => {
     async function fetchMostRecentGlucose() {
       try {
@@ -131,9 +131,22 @@ function App() {
           glucose_reading: glucoseReading,
           dt_stamp: currentDatetime,
         });
+
+        // Fetch the latest serving_size and brand
+        const foodResponse = await axios.get('/api/food/most-recent'); // Replace with your actual API endpoint
+
+        if (foodResponse.data) {
+        // Update recentFoodEntry with the latest data
+        setRecentFoodEntry(foodResponse.data);
+        }
+        
+        
+        // Clear fields if needed
         setGlucoseReading('');
-        // Clear foodChangeDescription if needed
         setFoodChangeDescription('');
+        setChangedField(null);
+        setFoodSameAsYesterday(null);
+
       } else {
         alert('An error occurred while storing glucose reading');
       }
@@ -144,8 +157,6 @@ function App() {
   };
   
   
-  
-
   return (
     <div className="App">
       <header className="App-header">
@@ -199,7 +210,7 @@ function App() {
               </button>
             </div>
           </div>
-
+          
           {/* Additional Fields */}
           {foodSameAsYesterday === 'no' && (
             <div className="additional-fields">
@@ -226,7 +237,7 @@ function App() {
           {/* Display the text box based on user's selection */}
           {changedField === 'food' && (
             <div className="food-change-description">
-              <label>Describe the food change:</label>
+              <label>Describe the food change: </label>
               <textarea
                 className="food-change-description-input"
                 value={foodChangeDescription}
@@ -240,8 +251,8 @@ function App() {
                       .join(' ')
                   );
                 }}
-                rows="4"
-                cols="50"
+                rows="1"
+                cols="22"
                 required
               />
             </div>
@@ -249,10 +260,10 @@ function App() {
 
           {/* Display the text box for updating serving size */}
           {changedField === 'servingSize' && (
-            <div className="food-change-description">
-              <label>Update serving size:</label>
+            <div className="food-serving-size-change-description">
+              <label>Update serving size (grams): </label>
               <textarea
-                className="food-change-description-input"
+                className="food-serving-size-description-input"
                 value={foodChangeDescription}
                 onChange={(event) => {
                   const input = event.target.value.slice(0, 20);
@@ -264,8 +275,8 @@ function App() {
                       .join(' ')
                   );
                 }}
-                rows="4"
-                cols="50"
+                rows="1"
+                cols="8"
                 required
               />
             </div>
