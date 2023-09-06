@@ -176,11 +176,12 @@ function App() {
 
           {/* Food Options */}
           <div className="question-container">
-            <p>Is the food brand and serving size the same as the previous meal?</p>
-            {/* Display the most recent food entry */}
             {recentFoodEntry && (
+            <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
+            {/* Display the most recent food entry */}
+            {/*{recentFoodEntry && (
             <p>(Last Food Entry: {recentFoodEntry.serving_size}G of {recentFoodEntry.brand} - {new Date(recentFoodEntry.served_at).toLocaleString()})</p>
-            )}
+            )}*/}
             <div className="options-container">
               <button
                 type="button"
