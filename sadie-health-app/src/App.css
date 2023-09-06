@@ -10,11 +10,7 @@ body {
 
 .App {
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
+  
 }
 
 .App-header {
@@ -30,7 +26,9 @@ body {
 }
 
 .App-main {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   padding: 20px;
 }
 
@@ -41,7 +39,20 @@ body {
   margin-bottom: 20px;
 }
 
+.form-container {
+  flex: 1;
+  padding-right: 20px;
+  border-right: 1px solid #ccc;
+}
 
+.glucose-container {
+  margin-bottom: 20px;
+}
+
+.recent-glucose {
+  margin-top: 20px;
+  text-align: left;
+}
 
 input[type="number"] {
   border: none;
@@ -133,4 +144,22 @@ input[type="number"] {
 .chart-container {
   width: 80%;
   margin: 2rem auto;
+}
+
+.glucose-header {
+  text-align: center;
+}
+.glucose-list {
+  list-style: none;
+  padding: 0;
+}
+
+.glucose-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.paw-list-icon {
+  margin-right: 8px;
 }

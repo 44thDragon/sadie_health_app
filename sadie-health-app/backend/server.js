@@ -54,6 +54,25 @@ app.get('/api/glucose-readings/all', (req, res) => {
   });
 });
 
+app.get('/api/food/all', (req, res) => {
+  const query = `
+    SELECT id,brand, serving_size, served_at
+    FROM pet_food
+    ORDER BY served_at DESC
+    LIMIT 25
+  `;
+
+  dbConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching all food entries:', error);
+      res.status(500).json({ message: 'An error occurred' });
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
