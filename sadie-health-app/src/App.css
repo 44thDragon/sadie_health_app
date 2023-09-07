@@ -58,15 +58,18 @@ body {
 
 .recent-glucose-container {
   width: 100%; /* Ensure it takes the full width */
-  display: flex;
   justify-content: flex-start; /* Align recent glucose to the left */
   margin-top: 20px; /* Add margin for spacing between the sections */
+  margin-left: 40px;
 }
 
 .recent-glucose {
   flex: 1; /* This will make the recent glucose container take up 50% of the available space */
   margin-top: 20px;
   margin-left: 40px;
+  display: none;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
 }
 
 input[type="number"] {
@@ -244,4 +247,28 @@ input[type="number"] {
 /* Rotate the icon when the accordion is expanded */
 .accordion-title.active .accordion-icon {
   transform: rotate(180deg); /* Rotate the icon 180 degrees */
+}
+
+
+.toggle-button {
+  cursor: pointer;
+  background-color: #822aa6; /* Background color */
+  border: none; /* Remove border */
+  padding: 10px;
+  text-align: left;
+  color: #fff; /* Text color */
+  font-weight: bold; /* Bold text */
+  border-radius: 4px; /* Rounded corners */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for raised effect */
+  transition: box-shadow 0.2s ease; /* Transition for shadow effect */
+}
+
+.toggle-button:active {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Change shadow on press */
+}
+
+.recent-glucose.open {
+  display: block;
+  max-height: 400px; /* Adjust the max-height as needed */
+  overflow-y: auto; /* Add scrollbar if content exceeds max-height */
 }

@@ -9,6 +9,10 @@ function App() {
   const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
   const [changedField, setChangedField] = useState(null);
   const [mostRecentGlucose, setMostRecentGlucose] = useState(null);
+  const [recentGlucoseVisible, setRecentGlucoseVisible] = useState(false);
+  const toggleRecentGlucose = () => {
+    setRecentGlucoseVisible(!recentGlucoseVisible);
+  };
   const [foodChangeDescription, setFoodChangeDescription] = useState('');
   const [glucoseData, setGlucoseData] = useState({
     food: {
@@ -327,10 +331,13 @@ function App() {
         </div>
 
         <div className="recent-glucose-container">
-          <div className="recent-glucose">
-            <div className="glucose-header">
-              <p>Recent Glucose Readings:</p>
-            </div>
+        <button
+        className="toggle-button"
+        onClick={() => toggleRecentGlucose()}
+        >
+        Toggle Recent Glucose Readings
+        </button>
+        <div className={`recent-glucose ${recentGlucoseVisible ? 'open' : ''}`}>
             <ul>
               {recentGlucoseReadings.map((reading, index) => (
                 <li key={index} className="glucose-item">
@@ -342,8 +349,8 @@ function App() {
               ))}
             </ul>
           </div>
-        </div>
-      </main>
+      </div>
+    </main>
     </div>
   );
 }
