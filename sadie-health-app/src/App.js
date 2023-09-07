@@ -18,10 +18,9 @@ function App() {
   });
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
   const [insulinDose, setInsulinDose] = useState('');
-  
+  const [mostRecentInsulin, setMostRecentInsulin] = useState(null);
   // Assuming served_at is a Unix timestamp
- 
-  
+
   useEffect(() => {
     async function fetchMostRecentGlucose() {
       try {
@@ -56,9 +55,23 @@ function App() {
       }
     }
 
+    async function fetchMostRecentInsulin() {
+      try {
+        const response = await axios.get('/api/insulin/most-recent');
+        if (response.data) {
+          setMostRecentInsulin(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching most recent insulin entry:', error);
+      }
+    }
+
+
     fetchRecentGlucoseReadings();
     fetchMostRecentGlucose();
     fetchRecentFoodEntry(); // Fetch the most recent food entry
+    fetchMostRecentInsulin() 
+
   }, []);
 
   const handleGlucoseChange = (event) => {
@@ -66,33 +79,21 @@ function App() {
   };
 
   const handleFoodOptionClick = (value) => {
-    setFoodSameAsYesterday(value);
-    // Add or remove the "active-button" class based on the selected option
-    const yesButton = document.getElementById('yes-button');
-    const noButton = document.getElementById('no-button');
-
-    if (value === 'yes') {
-      yesButton.classList.add('active-button');
-      noButton.classList.remove('active-button');
+    if (foodSameAsYesterday === value) {
+      setFoodSameAsYesterday(null); // Toggle off if already active
     } else {
-      yesButton.classList.remove('active-button');
-      noButton.classList.add('active-button');
+      setFoodSameAsYesterday(value); // Toggle on if not active
     }
-
-
-    setChangedField(null); // Reset changedField when the option changes
+  
+    setChangedField(null);
     if (value === 'no' && changedField === 'servingSize') {
-      // User selects "No" and "Serving Size," set foodChangeDescription to recentFoodEntry.brand
       setFoodChangeDescription(recentFoodEntry.brand);
     } else {
-      // Default case, set foodChangeDescription to an empty string
       setFoodChangeDescription('');
     }
   };
   
 
-
-  
   const handleChangedFieldClick = (field) => {
     setChangedField(field);
   };
@@ -105,7 +106,7 @@ function App() {
       const currentDatetime = new Date();
       const petName = 'Sadie';
       const servedAt = currentDatetime;
-  
+
       // Prepare the data to be sent to the server
       let requestData = {
         glucose_reading: glucoseReading,
@@ -116,7 +117,7 @@ function App() {
         },
         units: {},
       };
-  
+
       if (changedField === 'food') {
         // User selected "Food"
         requestData.food.brand = foodChangeDescription;
@@ -130,19 +131,18 @@ function App() {
         requestData.food.brand = recentFoodEntry.brand;
         requestData.food.serving_size = recentFoodEntry.serving_size;
       }
-      
+
       const response = await axios.post('/api/glucose-readings/submit', requestData);
-      
+
       setInsulinDose('');
 
-       // Make an additional POST request to save insulin dose data
+      // Make an additional POST request to save insulin dose data
       const insulinResponse = await axios.post('/api/insulin/submit', {
-      units: insulinDose,
-      insulin_brand: "Novolin",
-      administered_on: currentDatetime,
-      needle: "U100"
-
-      // Include any other relevant data for the insulin submission
+        units: insulinDose,
+        insulin_brand: "Novolin",
+        administered_on: currentDatetime,
+        needle: "U100"
+        // Include any other relevant data for the insulin submission
       });
       requestData.units.insulin_dose = insulinDose;
       // Handle the insulin dose response as needed
@@ -177,11 +177,10 @@ function App() {
         const foodResponse = await axios.get('/api/food/most-recent'); // Replace with your actual API endpoint
 
         if (foodResponse.data) {
-        // Update recentFoodEntry with the latest data
-        setRecentFoodEntry(foodResponse.data);
+          // Update recentFoodEntry with the latest data
+          setRecentFoodEntry(foodResponse.data);
         }
-        
-        
+
         // Clear fields if needed
         setGlucoseReading('');
         setFoodChangeDescription('');
@@ -196,50 +195,37 @@ function App() {
       console.error(error);
     }
   };
-  
-  
+
   return (
     <div className="App">
       <header className="App-header">
         <h1 className="app-title">
-          {/*<span role="img" aria-label="dog-emoji">
-            🐾 Woof! Woof!
-            </span>
-            {' '}
-            Welcome to
-            {' '}*/}
           <span className="health-text">Welcome to Sadie Health</span>
         </h1>
       </header>
       <main className="App-main">
-      <div className="form-container">
-        <form onSubmit={handleSubmit}>
-          {/* Glucose Reading */}
-          <div className="label-container">
-            <label>What was Sadie's glucose reading?</label>
-            <input
-              type="number"
-              value={glucoseReading}
-              onChange={handleGlucoseChange}
-              min="0"
-              max="600"
-              required
-            /> mg/dl
-          </div>
+        <div className="form-container">
+          <form onSubmit={handleSubmit}>
+            <div className="label-container">
+              <label>What was Sadie's glucose reading?</label>
+              <input
+                type="number"
+                value={glucoseReading}
+                onChange={handleGlucoseChange}
+                min="0"
+                max="600"
+                required
+              /> mg/dl
+            </div>
 
-          {/* Food Options */}
-          <div className="question-container">
-            {recentFoodEntry && (
-            <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
-            {/* Display the most recent food entry */}
-            {/*{recentFoodEntry && (
-            <p>(Last Food Entry: {recentFoodEntry.serving_size}G of {recentFoodEntry.brand} - {new Date(recentFoodEntry.served_at).toLocaleString()})</p>
-            )}*/}
-            <div className="options-container">
+            <div className="question-container">
+              {recentFoodEntry && (
+                <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
+              <div className="options-container">
               <button
                 id="yes-button"
                 type="button"
-                className={`option-button ${foodSameAsYesterday === 'yes' ? 'active' : ''}`}
+                className={`option-button ${foodSameAsYesterday === 'yes' ? 'active-button' : ''}`}
                 onClick={() => handleFoodOptionClick('yes')}
               >
                 Yes
@@ -247,124 +233,115 @@ function App() {
               <button
                 id="no-button"
                 type="button"
-                className={`option-button ${foodSameAsYesterday === 'no' ? 'active' : ''}`}
+                className={`option-button ${foodSameAsYesterday === 'no' ? 'active-button' : ''}`}
                 onClick={() => handleFoodOptionClick('no')}
               >
                 No
               </button>
-            </div>
-          </div>
-          
-          {/* Additional Fields */}
-          {foodSameAsYesterday === 'no' && (
-            <div className="additional-fields">
-              <p>What changed?</p>
-              <div className="options-container">
-                <button
-                  type="button"
-                  className={`option-button ${changedField === 'food' ? 'active' : ''}`}
-                  onClick={() => handleChangedFieldClick('food')}
-                >
-                  Food
-                </button>
-                <button
-                  type="button"
-                  className={`option-button ${changedField === 'servingSize' ? 'active' : ''}`}
-                  onClick={() => handleChangedFieldClick('servingSize')}
-                >
-                  Serving Size
-                </button>
+
               </div>
             </div>
-          )}
 
-          {/* Display the text box based on user's selection */}
-          {changedField === 'food' && (
-            <div className="food-change-description">
-              <label>Describe the food change: </label>
-              <textarea
-                className="food-change-description-input"
-                value={foodChangeDescription}
-                onChange={(event) => {
-                  const input = event.target.value.slice(0, 20);
-                  setFoodChangeDescription(
-                    input
-                      .toLowerCase()
-                      .split(' ')
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')
-                  );
-                }}
-                rows="1"
-                cols="22"
-                required
-              />
-            </div>
-          )}
+            {foodSameAsYesterday === 'no' && (
+              <div className="additional-fields">
+                <p>What changed?</p>
+                <div className="options-container">
+                  <button
+                    type="button"
+                    className={`option-button ${changedField === 'food' ? 'active-button' : ''}`}
+                    onClick={() => handleChangedFieldClick('food')}
+                  >
+                    Food
+                  </button>
+                  <button
+                    type="button"
+                    className={`option-button ${changedField === 'servingSize' ? 'active-button' : ''}`}
+                    onClick={() => handleChangedFieldClick('servingSize')}
+                  >
+                    Serving Size
+                  </button>
+                </div>
+              </div>
+            )}
 
-          {/* Display the text box for updating serving size */}
-          {changedField === 'servingSize' && (
-            <div className="food-serving-size-change-description">
-              <label>Update serving size (grams): </label>
-              <textarea
-                className="food-serving-size-description-input"
-                value={foodChangeDescription}
-                onChange={(event) => {
-                  const input = event.target.value.slice(0, 20);
-                  setFoodChangeDescription(
-                    input
-                      .toLowerCase()
-                      .split(' ')
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ')
-                  );
-                }}
-                rows="1"
-                cols="8"
-                required
-              />
-            </div>
-          )}
-      
-      <label>If the insulin dose of 14 units of Novolin was not administered, how much was?</label>
-      <input
-       type="number"
-        value={insulinDose}
-        onChange={(event) => setInsulinDose(event.target.value)}
-        min="1"
-        max="30"
-        />
+            {changedField === 'food' && (
+              <div className="food-change-description">
+                <label>Describe the food change: </label>
+                <textarea
+                  className="food-change-description-input"
+                  value={foodChangeDescription}
+                  onChange={(event) => {
+                    const input = event.target.value.slice(0, 20);
+                    setFoodChangeDescription(
+                      input
+                        .toLowerCase()
+                        .split(' ')
+                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')
+                    );
+                  }}
+                  rows="1"
+                  cols="22"
+                  required
+                />
+              </div>
+            )}
 
-          {/* Submit Button */}
-          <button type="submit" className="paw-button">
-            <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
-          </button>
-        </form>
-                
-       
+            {changedField === 'servingSize' && (
+              <div className="food-serving-size-change-description">
+                <label>Update serving size (grams): </label>
+                <textarea
+                  className="food-serving-size-description-input"
+                  value={foodChangeDescription}
+                  onChange={(event) => {
+                    const input = event.target.value.slice(0, 20);
+                    setFoodChangeDescription(
+                      input
+                        .toLowerCase()
+                        .split(' ')
+                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')
+                    );
+                  }}
+                  rows="1"
+                  cols="8"
+                  required
+                />
+              </div>
+            )}
+            {mostRecentInsulin && (
+            <label>If the insulin dose of {mostRecentInsulin.units} of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
+            )}
+            <input
+              type="number"
+              value={insulinDose}
+              onChange={(event) => setInsulinDose(event.target.value)}
+              min="1"
+              max="30"
+            />
+
+            <button type="submit" className="paw-button">
+              <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
+            </button>
+          </form>
         </div>
-         
-
 
         <div className="recent-glucose-container">
-
-          {/* Recent Glucose Reading */}
-         <div className="recent-glucose">
-          <div className="glucose-header">
-            <p>Recent Glucose Readings:</p>
+          <div className="recent-glucose">
+            <div className="glucose-header">
+              <p>Recent Glucose Readings:</p>
+            </div>
+            <ul>
+              {recentGlucoseReadings.map((reading, index) => (
+                <li key={index} className="glucose-item">
+                  <FontAwesomeIcon icon={faPaw} className="paw-list-icon" />
+                  {reading.glucose_reading} mg/dl
+                  {' '}
+                  (Recorded on: {new Date(reading.dt_stamp).toLocaleString()})
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul>
-            {recentGlucoseReadings.map((reading, index) => (
-              <li key={index} className="glucose-item">
-                <FontAwesomeIcon icon={faPaw} className="paw-list-icon" />
-                {reading.glucose_reading} mg/dl
-                {' '}
-                (Recorded on: {new Date(reading.dt_stamp).toLocaleString()})
-              </li>
-            ))}
-          </ul>
-        </div>
-
         </div>
       </main>
     </div>

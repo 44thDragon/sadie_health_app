@@ -1,0 +1,48 @@
+const express = require('express');
+const router = express.Router();
+const dbConnection = require('../dbConnection');
+
+// Define the route for submitting an insulin entry
+router.post('/submit', (req, res) => {
+  const { insulin_brand, units, administered_on } = req.body;
+  const insulinQuery = 'INSERT INTO insulin (insulin_brand, units, administered_on) VALUES (?, ?, ?)';
+  const insulinValues = [insulin_brand, units, administered_on];
+
+  // Insert insulin data into the insulin table
+  dbConnection.query(insulinQuery, insulinValues, (insulinError, insulinResults) => {
+    if (insulinError) {
+      console.error('Error storing insulin data:', insulinError);
+      // Handle the error as needed
+      res.status(500).json({ error: 'An error occurred while storing insulin data' });
+    } else {
+      console.log('Insulin data stored successfully');
+      res.status(201).json({ message: 'Insulin data stored successfully' });
+    }
+  });
+});
+
+// Define the route for retrieving the most recent insulin entry
+router.get('/most-recent', (req, res) => {
+  const query = `
+    SELECT insulin_brand, units
+    FROM insulin
+    ORDER BY administered_on DESC
+    LIMIT 1
+  `;
+
+  dbConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching most recent insulin entry:', error);
+      res.status(500).json({ message: 'An error occurred' });
+    } else {
+      if (results.length > 0) {
+        const mostRecentInsulinEntry = results[0];
+        res.status(200).json(mostRecentInsulinEntry);
+      } else {
+        res.status(404).json({ message: 'No insulin entries found' });
+      }
+    }
+  });
+});
+
+module.exports = router;

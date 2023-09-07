@@ -39,7 +39,7 @@ body {
 
 /* Define the active button style */
 .active-button {
-  background-color: #8e44ad; /* Green background color */
+  background-color: #8e44ad !important; /* Green background color */
   color: white; /* White text color */
   border: none; /* Remove the border */
   padding: 10px 20px; /* Adjust padding as needed */
@@ -106,52 +106,6 @@ input[type="number"] {
   padding: 10px 20px;
   flex: 1;
 }
-
-.option-button:active {
-  margin: 0 5px;
-  border: none;
-  cursor: pointer;
-  background-color: #8e44ad; /* Green background color */
-  color: #fff;
-  font-size: 16px;
-  padding: 10px 20px;
-  flex: 1;
-}
-
-.option-button:onclick {
-  
-  background-color: #8e44ad; /* Green background color */
-  
-}
-
-.insulin-option-button.active {
-  background-color: #8e44ad;
-}
-
-.insulin-options-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.insulin-option-button {
-  margin: 0 5px;
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-  color: #fff;
-  font-size: 16px;
-  padding: 10px 20px;
-  flex: 1;
-}
-
-.insulin-option-button.active {
-  background-color: #8e44ad;
-}
-
-
-
-
 
 
 
