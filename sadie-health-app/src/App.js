@@ -23,9 +23,35 @@ function App() {
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
   const [insulinDose, setInsulinDose] = useState('');
   const [mostRecentInsulin, setMostRecentInsulin] = useState(null);
+  const [insulinQuestion, setInsulinQuestion] = useState(''); // Define the insulinQuestion state
+  const [insulinData, setInsulinData] = useState({
+    insulin: {
+      insulin_brand: 'Novolin', // Initial value for serving_size
+      timestamp: new Date().toISOString(), // Current timestamp
+    },
+  });
+
   // Assuming served_at is a Unix timestamp
 
+  async function fetchMostRecentInsulin() {
+    try {
+      const response = await axios.get('/api/insulin/most-recent');
+      if (response.data) {
+        setMostRecentInsulin(response.data);
+  
+        // Update the question text here as well
+        const newInsulinQuestion = `If the insulin dose of ${response.data.units || ''} of ${response.data.insulin_brand || ''} was not administered, how much was?`;
+        setInsulinQuestion(newInsulinQuestion); // Set the insulinQuestion state
+      }
+    } catch (error) {
+      console.error('Error fetching most recent insulin entry:', error);
+    }
+  }
+
+  
+
   useEffect(() => {
+    document.title = 'Sadie Health';
     async function fetchMostRecentGlucose() {
       try {
         const response = await axios.get('/api/glucose-readings/most-recent');
@@ -64,6 +90,11 @@ function App() {
         const response = await axios.get('/api/insulin/most-recent');
         if (response.data) {
           setMostRecentInsulin(response.data);
+  
+          // Update the question text here as well
+          setInsulinQuestion(
+            `If the insulin dose of ${response.data.units || ''} of ${response.data.insulin_brand || ''} was not administered, how much was?`
+          );
         }
       } catch (error) {
         console.error('Error fetching most recent insulin entry:', error);
@@ -110,6 +141,8 @@ function App() {
       const currentDatetime = new Date();
       const petName = 'Sadie';
       const servedAt = currentDatetime;
+      const administeredOn = currentDatetime
+      
 
       // Prepare the data to be sent to the server
       let requestData = {
@@ -119,7 +152,9 @@ function App() {
         food: {
           served_at: servedAt,
         },
-        units: {},
+        insulin: {
+          administered_on: administeredOn,
+        }
       };
 
       if (changedField === 'food') {
@@ -136,19 +171,35 @@ function App() {
         requestData.food.serving_size = recentFoodEntry.serving_size;
       }
 
+      
       const response = await axios.post('/api/glucose-readings/submit', requestData);
 
-      setInsulinDose('');
+      
 
+      
+     
+      // Check if insulinDose is empty, and if so, use mostRecentInsulin.units
+      if (insulinDose == "") {
+        // Fetch the latest insulin entry
+        
+        const latestInsulinResponse = await axios.get('/api/insulin/most-recent');
+        console.log(latestInsulinResponse.data)
+        if (latestInsulinResponse.data) {
+          requestData.insulin.units = latestInsulinResponse.data.units;
+        }
+      } else {
+        requestData.insulin.units = insulinDose;
+      }
+      
       // Make an additional POST request to save insulin dose data
       const insulinResponse = await axios.post('/api/insulin/submit', {
-        units: insulinDose,
+        units: requestData.insulin.units,
         insulin_brand: "Novolin",
         administered_on: currentDatetime,
         needle: "U100"
         // Include any other relevant data for the insulin submission
       });
-      requestData.units.insulin_dose = insulinDose;
+
       // Handle the insulin dose response as needed
       if (insulinResponse.status === 201) {
         // The insulin dose data was successfully saved
@@ -156,6 +207,8 @@ function App() {
         alert('Insulin dose data saved successfully.');
         setInsulinDose('');
         // If needed, trigger additional actions or state updates
+         // Call fetchMostRecentInsulin again to update insulinQuestion
+         fetchMostRecentInsulin();
       } else {
         // Handle any errors or show an error message
         alert('Error saving insulin dose data.');
@@ -184,8 +237,12 @@ function App() {
           // Update recentFoodEntry with the latest data
           setRecentFoodEntry(foodResponse.data);
         }
-
+        // Update the question text
+        setInsulinQuestion(
+        `If the insulin dose of ${mostRecentInsulin.units} of ${mostRecentInsulin.insulin_brand} was not administered, how much was?`
+        );
         // Clear fields if needed
+        setInsulinDose('');
         setGlucoseReading('');
         setFoodChangeDescription('');
         setChangedField(null);
@@ -219,6 +276,7 @@ function App() {
                 min="0"
                 max="600"
                 required
+                autoFocus
               /> mg/dl
             </div>
 
@@ -314,7 +372,7 @@ function App() {
               </div>
             )}
             {mostRecentInsulin && (
-            <label>If the insulin dose of {mostRecentInsulin.units} of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
+            <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
             )}
             <input
               type="number"
