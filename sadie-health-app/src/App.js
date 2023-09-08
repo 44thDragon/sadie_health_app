@@ -3,6 +3,9 @@ import axios from 'axios';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { CartesianGrid } from 'recharts';
+
 
 function App() {
   const [glucoseReading, setGlucoseReading] = useState('');
@@ -14,12 +17,12 @@ function App() {
     setRecentGlucoseVisible(!recentGlucoseVisible);
   };
   const [foodChangeDescription, setFoodChangeDescription] = useState('');
-  const [glucoseData, setGlucoseData] = useState({
-    food: {
-      serving_size: '215', // Initial value for serving_size
-      timestamp: new Date().toISOString(), // Current timestamp
-    },
-  });
+  //const [glucoseData, setGlucoseData] = useState({
+  //  food: {
+  //    serving_size: '215', // Initial value for serving_size
+  //    timestamp: new Date().toISOString(), // Current timestamp
+  //  },
+  //});
   const [recentFoodEntry, setRecentFoodEntry] = useState(null); // Added state for recent food entry
   const [insulinDose, setInsulinDose] = useState('');
   const [mostRecentInsulin, setMostRecentInsulin] = useState(null);
@@ -30,6 +33,9 @@ function App() {
       timestamp: new Date().toISOString(), // Current timestamp
     },
   });
+  const [glucoseData, setGlucoseData] = useState([]);
+
+
 
   // Assuming served_at is a Unix timestamp
 
@@ -60,6 +66,18 @@ function App() {
         }
       } catch (error) {
         console.error('Error fetching most recent glucose reading:', error);
+      }
+    }
+
+    async function fetchGlucoseData() {
+      try {
+        const response = await axios.get('/api/glucose-readings/all'); // Replace with your actual API endpoint
+        if (response.data) {
+          // Update glucoseData state with the received data
+          setGlucoseData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching glucose data:', error);
       }
     }
 
@@ -105,7 +123,8 @@ function App() {
     fetchRecentGlucoseReadings();
     fetchMostRecentGlucose();
     fetchRecentFoodEntry(); // Fetch the most recent food entry
-    fetchMostRecentInsulin() 
+    fetchMostRecentInsulin();
+    fetchGlucoseData();
 
   }, []);
 
@@ -256,6 +275,7 @@ function App() {
       console.error(error);
     }
   };
+  console.log({glucoseData})
 
   return (
     <div className="App">
@@ -408,6 +428,16 @@ function App() {
             </ul>
           </div>
       </div>
+      <div className="line-chart-container">
+  <LineChart width={600} height={300} data={glucoseData}>
+    <XAxis dataKey="dt_stamp" />
+    <YAxis />
+    <CartesianGrid strokeDasharray="3 3" />
+    <Tooltip />
+    <Legend />
+    <Line type="monotone" dataKey="glucose_reading" name="Glucose Reading" stroke="#8884d8" />
+  </LineChart>
+</div>
     </main>
     </div>
   );
