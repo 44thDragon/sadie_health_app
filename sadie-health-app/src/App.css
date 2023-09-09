@@ -154,7 +154,7 @@ input[type="number"] {
 }
 
 .health-text {
-  font-family: 'Arial', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   color: #fff;
 }
 
@@ -274,7 +274,43 @@ input[type="number"] {
 }
 
 
+
+
+/* Styling for LineChart */
 .line-chart-container {
+  /*background-color: white; /* White background for the chart container */
+  /*border: 1px solid #ccc; /* Add a border for visual separation */
   margin-left: 40px; /* Adjust the margin as needed */
   padding-top: 10px; /* Adjust the padding as needed */
+}
+
+.recharts-wrapper {
+  background-color: white; /* White background for the chart container */
+  border: 1px solid #ccc; /* Add a border for visual separation */
+  margin-left: 40px; /* Adjust the margin as needed */
+  padding-top: 10px; /* Adjust the padding as needed */
+}
+
+/* Styling for Y-Axis Label */
+.recharts-y-axis-label {
+  fill: #333; /* Y-axis label color */
+  font-size: 14px; /* Y-axis label font size */
+}
+
+ 
+
+.custom-tooltip {
+  background-color: #ff6b6b; /* Background color */
+  color: #fff; /* Text color */
+  border-radius: 5px; /* Rounded corners */
+  padding: 10px; /* Padding inside the tooltip */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Box shadow for a slight elevation effect */
+}
+
+.custom-tooltip p {
+  margin: 0; /* Remove default margin for paragraphs inside the tooltip */
+}
+
+.custom-tooltip p:first-child {
+  font-weight: bold; /* Make the first paragraph (X value) bold */
 }

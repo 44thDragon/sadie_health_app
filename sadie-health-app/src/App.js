@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaw } from '@fortawesome/free-solid-svg-icons';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { CartesianGrid } from 'recharts';
+import { format } from 'date-fns';
+
 
 
 function App() {
@@ -34,7 +36,27 @@ function App() {
     },
   });
   const [glucoseData, setGlucoseData] = useState([]);
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active) {
+      const xValue = new Date(label);
+      const yValue = payload[0].value; // Use payload to get the y-axis value
 
+      // Format the date and time in a user-friendly way
+    const formattedDate = xValue.toLocaleDateString();
+    const formattedTime = xValue.toLocaleTimeString();
+  
+      return (
+        <div className="custom-tooltip">
+          <p>Date: {formattedDate}</p>
+          <p>Time: {formattedTime}</p>
+          <p>Glucose Reading: {yValue}</p>
+        </div>
+      );
+    }
+  
+    return null;
+  };
+  
 
 
   // Assuming served_at is a Unix timestamp
@@ -430,12 +452,15 @@ function App() {
       </div>
       <div className="line-chart-container">
   <LineChart width={600} height={300} data={glucoseData}>
-    <XAxis dataKey="dt_stamp" />
-    <YAxis />
-    <CartesianGrid strokeDasharray="3 3" />
-    <Tooltip />
+  <CartesianGrid strokeDasharray="3 3" />
+  <XAxis dataKey="dt_stamp" type="category" allowDuplicatedCategory={false} tickFormatter={(tick) => format(new Date(tick), 'MM/dd/yyyy')} />
+  <YAxis label={{ value: 'Glucose Reading (mg/dl)', angle: -90, position: 'insideLeft' }}/>
+  
+    <Tooltip content={<CustomTooltip />} /> {/* Use the custom tooltip */}
+
     <Legend />
-    <Line type="monotone" dataKey="glucose_reading" name="Glucose Reading" stroke="#8884d8" />
+    <Line type="monotone" dataKey="glucose_reading" name="Glucose Levels Over Time" stroke="#8884d8" />
+
   </LineChart>
 </div>
     </main>
