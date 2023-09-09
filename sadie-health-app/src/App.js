@@ -56,7 +56,25 @@ function App() {
   
     return null;
   };
-  
+
+  //Backdate
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [showDateInput, setShowDateInput] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const handleCheckboxChange = () => {
+    setIsCheckboxChecked(!isCheckboxChecked);
+    setShowDateInput(false); // Reset the date input when unchecking the checkbox
+  };
+  const handleDateInputChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+  const handleTimeInputChange = (event) => {
+    setSelectedTime(event.target.value);
+  };
+  const toggleCalendarPicker = () => {
+    setShowDateInput(!showDateInput);
+  };
 
 
   // Assuming served_at is a Unix timestamp
@@ -149,6 +167,9 @@ function App() {
     fetchGlucoseData();
 
   }, []);
+  
+  
+
 
   const handleGlucoseChange = (event) => {
     setGlucoseReading(event.target.value);
@@ -175,7 +196,146 @@ function App() {
   };
 
   const [recentGlucoseReadings, setRecentGlucoseReadings] = useState([]);
+  
+  const handleBackdatedGlucoseSubmit = async (event) => {
+    event.preventDefault();
+  
+    // Check if isCheckboxChecked is true and selectedDate and selectedTime are not empty
+    if (isCheckboxChecked && selectedDate && selectedTime) {
+      try {
+        const currentDatetime = new Date();
+        const petName = 'Sadie';
+        const servedAt = currentDatetime;
+        const administeredOn = currentDatetime;
+  
+        // Create a new Date object by combining selectedDate and selectedTime
+        const backdatedDatetime = new Date(`${selectedDate}T${selectedTime}:00Z`);
+  
+        // Prepare the data to be sent to the server
+        let requestData = {
+          glucose_reading: glucoseReading,
+          dt_stamp: backdatedDatetime.toISOString(),
+          pet_name: petName,
+          food: {
+            served_at: servedAt,
+          },
+          insulin: {
+            administered_on: administeredOn,
+          },
+        };
+  
+        if (changedField === 'food') {
+          // User selected "Food"
+          requestData.food.brand = foodChangeDescription;
+          requestData.food.serving_size = recentFoodEntry.serving_size;
+        } else if (changedField === 'servingSize') {
+          // User selected "Serving Size"
+          requestData.food.brand = recentFoodEntry.brand;
+          requestData.food.serving_size = foodChangeDescription;
+        } else if (foodSameAsYesterday === 'yes') {
+          // Include recentFoodEntry.brand and serving_size if they select "Yes"
+          requestData.food.brand = recentFoodEntry.brand;
+          requestData.food.serving_size = recentFoodEntry.serving_size;
+        }
+  
+        // Send a POST request to your server's endpoint for backdated glucose readings
+        const response = await axios.post('/api/glucose-readings/backdated', requestData);
+         
+        if (response.status === 201) {
+          alert('Backdated glucose reading and food data stored successfully');
+  
+          // Reset the form and state variables
+          setGlucoseReading('');
+          
+          // ... (reset other state variables as needed)
+  
+          // Perform any other actions or updates as needed
+        } else {
+          alert('An error occurred while storing backdated glucose reading');
+        }
+      
+    
+    // Check if insulinDose is empty, and if so, use mostRecentInsulin.units
+    if (insulinDose == "") {
+      // Fetch the latest insulin entry
+      
+      const latestInsulinResponse = await axios.get('/api/insulin/most-recent');
+      console.log(latestInsulinResponse.data)
+      if (latestInsulinResponse.data) {
+        requestData.insulin.units = latestInsulinResponse.data.units;
+      }
+    } else {
+      requestData.insulin.units = insulinDose;
+    }
+    // Make an additional POST request to save insulin dose data
+    const insulinResponse = await axios.post('/api/insulin/submit', {
+      units: requestData.insulin.units,
+      insulin_brand: "Novolin",
+      administered_on: currentDatetime,
+      needle: "U100"
+      // Include any other relevant data for the insulin submission
+    });
 
+    // Handle the insulin dose response as needed
+    if (insulinResponse.status === 201) {
+      // The insulin dose data was successfully saved
+      // You can update your UI or perform any other actions here
+      alert('Insulin dose data saved successfully.');
+      setInsulinDose('');
+      // If needed, trigger additional actions or state updates
+       // Call fetchMostRecentInsulin again to update insulinQuestion
+       fetchMostRecentInsulin();
+    } else {
+      // Handle any errors or show an error message
+      alert('Error saving insulin dose data.');
+      console.error('Error response:', insulinResponse);
+      // You can decide how to handle errors based on your app's requirements
+    }
+    if (response.status === 201) {
+      alert('Glucose reading and food data stored successfully');
+      // Update the recentGlucoseReadings state with the new reading
+      setRecentGlucoseReadings([
+        {
+          glucose_reading: glucoseReading,
+          dt_stamp: currentDatetime.toISOString(),
+        },
+        ...recentGlucoseReadings,
+      ]);
+      setMostRecentGlucose({
+        glucose_reading: glucoseReading,
+        dt_stamp: currentDatetime,
+      });
+
+      // Fetch the latest serving_size and brand
+      const foodResponse = await axios.get('/api/food/most-recent'); // Replace with your actual API endpoint
+
+      if (foodResponse.data) {
+        // Update recentFoodEntry with the latest data
+        setRecentFoodEntry(foodResponse.data);
+      }
+      // Update the question text
+      setInsulinQuestion(
+      `If the insulin dose of ${mostRecentInsulin.units} of ${mostRecentInsulin.insulin_brand} was not administered, how much was?`
+      );
+      // Clear fields if needed
+      setInsulinDose('');
+      setGlucoseReading('');
+      setFoodChangeDescription('');
+      setChangedField(null);
+      setFoodSameAsYesterday(null);
+      setSelectedDate('');
+      setSelectedTime('');
+      setIsCheckboxChecked(false);
+
+    } else {
+      alert('An error occurred while storing glucose reading');
+    }
+  } catch (error) {
+    alert('An error occurred while storing glucose reading');
+    console.error(error);
+  }}
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -308,7 +468,7 @@ function App() {
       </header>
       <main className="App-main">
         <div className="form-container">
-          <form onSubmit={handleSubmit}>
+        <form onSubmit={isCheckboxChecked ? handleBackdatedGlucoseSubmit : handleSubmit}>
             <div className="label-container">
               <label>What was Sadie's glucose reading?</label>
               <input
@@ -319,8 +479,49 @@ function App() {
                 max="600"
                 required
                 autoFocus
-              /> mg/dl
+              /> mg/dl. <input
+              type="checkbox"
+              checked={isCheckboxChecked}
+              onChange={handleCheckboxChange}
+              id="mg-dl-checkbox"
+            />
+            <label htmlFor="mg-dl-checkbox"> Check if you are backdating this reading </label>
             </div>
+                {isCheckboxChecked && (
+            <div className="date-time-inputs">
+              <div className="date-input">
+                <label>Date:</label>
+                {showDateInput ? (
+                  <>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={handleDateInputChange}
+                      required
+                    />
+                    <button onClick={toggleCalendarPicker}>Close Calendar</button>
+                  </>
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="MM/DD/YYYY"
+                    onClick={toggleCalendarPicker}
+                    readOnly
+                  />
+                )}
+              </div>
+              <div className="time-input">
+                <label>Time:</label>
+                <input
+                  type="time"
+                  value={selectedTime}
+                  onChange={handleTimeInputChange}
+                  required
+                />
+              </div>
+            </div>
+          )}
+
 
             <div className="question-container">
               {recentFoodEntry && (
