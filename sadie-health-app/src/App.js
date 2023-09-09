@@ -203,11 +203,8 @@ function App() {
     // Check if isCheckboxChecked is true and selectedDate and selectedTime are not empty
     if (isCheckboxChecked && selectedDate && selectedTime) {
       try {
-        const currentDatetime = new Date();
+        
         const petName = 'Sadie';
-        const servedAt = currentDatetime;
-        const administeredOn = currentDatetime;
-  
         // Create a new Date object by combining selectedDate and selectedTime
         const backdatedDatetime = new Date(`${selectedDate}T${selectedTime}:00Z`);
   
@@ -216,124 +213,36 @@ function App() {
           glucose_reading: glucoseReading,
           dt_stamp: backdatedDatetime.toISOString(),
           pet_name: petName,
-          food: {
-            served_at: servedAt,
-          },
-          insulin: {
-            administered_on: administeredOn,
-          },
         };
-  
-        if (changedField === 'food') {
-          // User selected "Food"
-          requestData.food.brand = foodChangeDescription;
-          requestData.food.serving_size = recentFoodEntry.serving_size;
-        } else if (changedField === 'servingSize') {
-          // User selected "Serving Size"
-          requestData.food.brand = recentFoodEntry.brand;
-          requestData.food.serving_size = foodChangeDescription;
-        } else if (foodSameAsYesterday === 'yes') {
-          // Include recentFoodEntry.brand and serving_size if they select "Yes"
-          requestData.food.brand = recentFoodEntry.brand;
-          requestData.food.serving_size = recentFoodEntry.serving_size;
-        }
-  
         // Send a POST request to your server's endpoint for backdated glucose readings
         const response = await axios.post('/api/glucose-readings/backdated', requestData);
-         
         if (response.status === 201) {
           alert('Backdated glucose reading and food data stored successfully');
   
           // Reset the form and state variables
           setGlucoseReading('');
-          
-          // ... (reset other state variables as needed)
-  
-          // Perform any other actions or updates as needed
-        } else {
-          alert('An error occurred while storing backdated glucose reading');
-        }
-      
-    
-    // Check if insulinDose is empty, and if so, use mostRecentInsulin.units
-    if (insulinDose == "") {
-      // Fetch the latest insulin entry
-      
-      const latestInsulinResponse = await axios.get('/api/insulin/most-recent');
-      console.log(latestInsulinResponse.data)
-      if (latestInsulinResponse.data) {
-        requestData.insulin.units = latestInsulinResponse.data.units;
-      }
-    } else {
-      requestData.insulin.units = insulinDose;
-    }
-    // Make an additional POST request to save insulin dose data
-    const insulinResponse = await axios.post('/api/insulin/submit', {
-      units: requestData.insulin.units,
-      insulin_brand: "Novolin",
-      administered_on: currentDatetime,
-      needle: "U100"
-      // Include any other relevant data for the insulin submission
-    });
+        
+           
+            // Clear fields if needed
+            setInsulinDose('');
+            setGlucoseReading('');
+            setFoodChangeDescription('');
+            setChangedField(null);
+            setFoodSameAsYesterday(null);
+            setSelectedDate('');
+            setSelectedTime('');
+            setIsCheckboxChecked(false);
+                
+              
+              } else {
+                alert('An error occurred while storing backdated glucose reading');
+              }
 
-    // Handle the insulin dose response as needed
-    if (insulinResponse.status === 201) {
-      // The insulin dose data was successfully saved
-      // You can update your UI or perform any other actions here
-      alert('Insulin dose data saved successfully.');
-      setInsulinDose('');
-      // If needed, trigger additional actions or state updates
-       // Call fetchMostRecentInsulin again to update insulinQuestion
-       fetchMostRecentInsulin();
-    } else {
-      // Handle any errors or show an error message
-      alert('Error saving insulin dose data.');
-      console.error('Error response:', insulinResponse);
-      // You can decide how to handle errors based on your app's requirements
-    }
-    if (response.status === 201) {
-      alert('Glucose reading and food data stored successfully');
-      // Update the recentGlucoseReadings state with the new reading
-      setRecentGlucoseReadings([
-        {
-          glucose_reading: glucoseReading,
-          dt_stamp: currentDatetime.toISOString(),
-        },
-        ...recentGlucoseReadings,
-      ]);
-      setMostRecentGlucose({
-        glucose_reading: glucoseReading,
-        dt_stamp: currentDatetime,
-      });
 
-      // Fetch the latest serving_size and brand
-      const foodResponse = await axios.get('/api/food/most-recent'); // Replace with your actual API endpoint
-
-      if (foodResponse.data) {
-        // Update recentFoodEntry with the latest data
-        setRecentFoodEntry(foodResponse.data);
-      }
-      // Update the question text
-      setInsulinQuestion(
-      `If the insulin dose of ${mostRecentInsulin.units} of ${mostRecentInsulin.insulin_brand} was not administered, how much was?`
-      );
-      // Clear fields if needed
-      setInsulinDose('');
-      setGlucoseReading('');
-      setFoodChangeDescription('');
-      setChangedField(null);
-      setFoodSameAsYesterday(null);
-      setSelectedDate('');
-      setSelectedTime('');
-      setIsCheckboxChecked(false);
-
-    } else {
-      alert('An error occurred while storing glucose reading');
-    }
-  } catch (error) {
-    alert('An error occurred while storing glucose reading');
-    console.error(error);
-  }}
+        } catch (error) {
+          alert('An error occurred while storing glucose reading');
+          console.error(error);
+        }}
   };
   
   const handleSubmit = async (event) => {
@@ -522,9 +431,9 @@ function App() {
             </div>
           )}
 
-
+            {!isCheckboxChecked && (
             <div className="question-container">
-              {recentFoodEntry && (
+               {recentFoodEntry && (
                 <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
               <div className="options-container">
               <button
@@ -532,6 +441,7 @@ function App() {
                 type="button"
                 className={`option-button ${foodSameAsYesterday === 'yes' ? 'active-button' : ''}`}
                 onClick={() => handleFoodOptionClick('yes')}
+                
               >
                 Yes
               </button>
@@ -540,13 +450,14 @@ function App() {
                 type="button"
                 className={`option-button ${foodSameAsYesterday === 'no' ? 'active-button' : ''}`}
                 onClick={() => handleFoodOptionClick('no')}
+                
               >
                 No
               </button>
 
               </div>
             </div>
-
+            )}
             {foodSameAsYesterday === 'no' && (
               <div className="additional-fields">
                 <p>What changed?</p>
@@ -614,23 +525,26 @@ function App() {
                 />
               </div>
             )}
-            {mostRecentInsulin && (
+            {!isCheckboxChecked && mostRecentInsulin && (
+              <div>
             <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
-            )}
+           
             <input
               type="number"
               value={insulinDose}
               onChange={(event) => setInsulinDose(event.target.value)}
               min="1"
               max="30"
+              
             />
-
+        </div>
+            )}
             <button type="submit" className="paw-button">
               <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
             </button>
           </form>
         </div>
-
+      
         <div className="recent-glucose-container">
         <button
         className="toggle-button"
