@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaw } from '@fortawesome/free-solid-svg-icons';
+import { faPaw, faNotesMedical } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
+
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { CartesianGrid } from 'recharts';
 import { format } from 'date-fns';
+
 
 
 
@@ -372,7 +374,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1 className="app-title">
-          <span className="health-text">Welcome to Sadie Health</span>
+          <span className="health-text">
+          <FontAwesomeIcon icon={faNotesMedical} /> Welcome to Sadie Health </span>
         </h1>
       </header>
       <main className="App-main">
@@ -388,13 +391,16 @@ function App() {
                 max="600"
                 required
                 autoFocus
-              /> mg/dl. <input
+              /> mg/dl. </div>
+              <div> <p>Backdating? 
+              <input
               type="checkbox"
               checked={isCheckboxChecked}
               onChange={handleCheckboxChange}
               id="mg-dl-checkbox"
             />
-            <label htmlFor="mg-dl-checkbox"> Check if you are backdating this reading </label>
+            <label htmlFor="mg-dl-checkbox"> </label>
+              </p>
             </div>
                 {isCheckboxChecked && (
             <div className="date-time-inputs">
@@ -408,7 +414,7 @@ function App() {
                       onChange={handleDateInputChange}
                       required
                     />
-                    <button onClick={toggleCalendarPicker}>Close Calendar</button>
+                    <button onClick={toggleCalendarPicker}>Clear Calendar</button>
                   </>
                 ) : (
                   <input

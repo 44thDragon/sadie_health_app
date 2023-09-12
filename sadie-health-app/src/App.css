@@ -4,7 +4,12 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background-color: #4a235a;
+  background: rgb(16,3,24);
+  background: -moz-linear-gradient(0deg, rgba(16,3,24,1) 0%, rgba(141,35,156,1) 100%);
+  background: -webkit-linear-gradient(0deg, rgba(16,3,24,1) 0%, rgba(141,35,156,1) 100%);
+  background: linear-gradient(0deg, rgba(16,3,24,1) 0%, rgba(141,35,156,1) 100%);
+  background-attachment: fixed;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#100318",endColorstr="#8d239c",GradientType=1); 
   color: #fff;
 }
 
@@ -21,7 +26,6 @@ body {
   font-size: calc(10px + 2vmin);
   color: white;
   padding: 20px;
-  background-color: #4a235a;
 }
 
 .App-main {
@@ -280,14 +284,16 @@ input[type="number"] {
 .line-chart-container {
   /*background-color: white; /* White background for the chart container */
   /*border: 1px solid #ccc; /* Add a border for visual separation */
-  margin-left: 40px; /* Adjust the margin as needed */
+  margin-top: 10px; /* Adjust the margin as needed */
+  margin-left: 20px; /* Adjust the margin as needed */
   padding-top: 10px; /* Adjust the padding as needed */
 }
 
 .recharts-wrapper {
   background-color: white; /* White background for the chart container */
   border: 1px solid #ccc; /* Add a border for visual separation */
-  margin-left: 40px; /* Adjust the margin as needed */
+  margin-top: 10px; /* Adjust the margin as needed */
+  margin-left: 20px; /* Adjust the margin as needed */
   padding-top: 10px; /* Adjust the padding as needed */
 }
 
