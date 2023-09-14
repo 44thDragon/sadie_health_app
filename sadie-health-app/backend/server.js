@@ -5,6 +5,7 @@ const cors = require('cors');
 const glucoseReadingsRoutes = require('./routes/glucoseReadings');
 const insulinRoutes = require('./routes/insulin');
 const dbConnection = require('./dbConnection');
+const FoodRoutes = require('./routes/food');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(bodyParser.json());
 
 app.use('/api/glucose-readings', glucoseReadingsRoutes);
 app.use('/api/insulin', insulinRoutes); // Use insulin routes
+app.use('/api/food', FoodRoutes); // Use food routes
 
 
 // New route for most recent insulin reading

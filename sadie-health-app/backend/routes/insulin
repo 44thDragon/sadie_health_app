@@ -45,4 +45,23 @@ router.get('/most-recent', (req, res) => {
   });
 });
 
+
+
+router.get('/all', (req, res) => {
+  const query = `
+  SELECT units
+  FROM insulin
+  ORDER BY administered_on ASC
+  `;
+  dbConnection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching all insulin data:', error);
+      res.status(500).json({ message: 'An error occurred' });
+    } else {
+      res.status(200).json(results); // Return the array of glucose readings
+    }
+  });
+});
+
+
 module.exports = router;

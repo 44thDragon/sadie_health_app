@@ -205,7 +205,6 @@ function App() {
     // Check if isCheckboxChecked is true and selectedDate and selectedTime are not empty
     if (isCheckboxChecked && selectedDate && selectedTime) {
       try {
-        
         const petName = 'Sadie';
         // Create a new Date object by combining selectedDate and selectedTime
         const backdatedDatetime = new Date(`${selectedDate}T${selectedTime}:00Z`);
@@ -215,37 +214,93 @@ function App() {
           glucose_reading: glucoseReading,
           dt_stamp: backdatedDatetime.toISOString(),
           pet_name: petName,
+          food: {
+            brand: recentFoodEntry.brand, // Include recentFoodEntry.brand
+            serving_size: recentFoodEntry.serving_size, // Include recentFoodEntry.serving_size
+            served_at: backdatedDatetime.toISOString()
+          },
+          insulin: {
+            units: mostRecentInsulin.units, // Include mostRecentInsulin.units
+            insulin_brand: mostRecentInsulin.insulin_brand, // Include mostRecentInsulin.insulin_brand
+          },
         };
+        
         // Send a POST request to your server's endpoint for backdated glucose readings
-        const response = await axios.post('/api/glucose-readings/backdated', requestData);
+        const response = await axios.post('/api/glucose-readings/backdated', {
+          pet_name: petName,
+          glucose_reading: glucoseReading,
+          dt_stamp: backdatedDatetime.toISOString()
+        // Include any other relevant data for the insulin submission
+        });
+
+        // Make an additional POST request to save insulin dose data
+        const insulinResponse = await axios.post('/api/insulin/submit', {
+          units: requestData.insulin.units,
+          insulin_brand: requestData.insulin_brand,
+          administered_on: requestData.food.served_at,
+          needle: "U100"
+        // Include any other relevant data for the insulin submission
+        });
+
+        // Handle the insulin dose response as needed
+      if (insulinResponse.status === 201) {
+        // The insulin dose data was successfully saved
+        // You can update your UI or perform any other actions here
+        alert('Insulin dose data saved successfully.');
+        
+        // If needed, trigger additional actions or state updates
+         // Call fetchMostRecentInsulin again to update insulinQuestion
+      } else {
+        // Handle any errors or show an error message
+        alert('Error saving insulin dose data.');
+        console.error('Error response:', insulinResponse);
+        // You can decide how to handle errors based on your app's requirements
+      }
+
+        // Make an additional POST request to save food  data
+        const foodResponse = await axios.post('/api/food/submit', {
+          brand: requestData.food.brand,
+          serving_size: requestData.food.serving_size,
+          served_at: requestData.food.served_at
+        // Include any other relevant data for the insulin submission
+        });
+
+         // Handle the insulin dose response as needed
+      if (foodResponse.status === 201) {
+        // The food  data was successfully saved
+        // You can update your UI or perform any other actions here
+        alert('Backdated food data saved successfully.');
+        // If needed, trigger additional actions or state updates
+         // Call fetchMostRecentInsulin again to update insulinQuestion
+      } else {
+        // Handle any errors or show an error message
+        alert('Error saving backdated food data.');
+        console.error('Error response:', insulinResponse);
+        // You can decide how to handle errors based on your app's requirements
+      }
+
         if (response.status === 201) {
-          alert('Backdated glucose reading and food data stored successfully');
+          alert('Backdated glucose reading and related data stored successfully');
   
           // Reset the form and state variables
           setGlucoseReading('');
-        
-           
-            // Clear fields if needed
-            setInsulinDose('');
-            setGlucoseReading('');
-            setFoodChangeDescription('');
-            setChangedField(null);
-            setFoodSameAsYesterday(null);
-            setSelectedDate('');
-            setSelectedTime('');
-            setIsCheckboxChecked(false);
-                
-              
-              } else {
-                alert('An error occurred while storing backdated glucose reading');
-              }
-
-
-        } catch (error) {
-          alert('An error occurred while storing glucose reading');
-          console.error(error);
-        }}
+          setInsulinDose('');
+          setFoodChangeDescription('');
+          setChangedField(null);
+          setFoodSameAsYesterday(null);
+          setSelectedDate('');
+          setSelectedTime('');
+          setIsCheckboxChecked(false);
+        } else {
+          alert('An error occurred while storing backdated glucose reading');
+        }
+      } catch (error) {
+        alert('An error occurred while storing glucose reading');
+        console.error(error);
+      }
+    }
   };
+  
   
   const handleSubmit = async (event) => {
     event.preventDefault();
