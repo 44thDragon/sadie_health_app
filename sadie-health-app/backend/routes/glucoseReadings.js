@@ -9,9 +9,9 @@ router.post('/submit', (req, res) => {
 
   // Check if food brand data is provided
   if (req.body.food) {
-    const { brand, serving_size, served_at } = req.body.food;
-    const foodQuery = 'INSERT INTO pet_food (brand, serving_size, served_at) VALUES (?, ?, ?)';
-    const foodValues = [brand, serving_size, served_at];
+    const { brand, serving_size, served_at, remaining } = req.body.food;
+    const foodQuery = 'INSERT INTO pet_food (brand, serving_size, served_at, remaining) VALUES (?, ?, ?)';
+    const foodValues = [brand, serving_size, served_at, remaining];
 
     // Insert food data into the pet_food table
     dbConnection.query(foodQuery, foodValues, (foodError, foodResults) => {

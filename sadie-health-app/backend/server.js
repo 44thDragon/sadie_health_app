@@ -87,7 +87,7 @@ app.get('/api/glucose-readings/all', (req, res) => {
 
 app.get('/api/food/all', (req, res) => {
   const query = `
-    SELECT id,brand, serving_size, served_at
+    SELECT id,brand, serving_size, served_at, remaining
     FROM pet_food
     ORDER BY served_at DESC
     LIMIT 25
