@@ -49,7 +49,10 @@ body {
   padding: 10px 20px; /* Adjust padding as needed */
   cursor: pointer; /* Change cursor to pointer on hover */
 }
+.food-remaining-container {
+  margin-left: 40px;
 
+}
 .form-container {
   flex: 1;
   

@@ -2,7 +2,7 @@
   import axios from 'axios';
   import './App.css';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-  import { faPaw, faNotesMedical } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
+  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
 
   import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
   import { CartesianGrid } from 'recharts';
@@ -80,7 +80,7 @@
 
     const [mostRecentRemaining, setMostRecentRemaining] = useState(null);
     const [updatedFoodRemaining, setUpdatedFoodRemaining] = useState(null);
-
+    const [daysOfFoodRemaining, setMostRecentDaysRemaining] = useState(null);
 
     // Assuming served_at is a Unix timestamp
 
@@ -118,7 +118,10 @@
         try {
           const response = await axios.get('/api/food/remaining-most-recent');
           if (response.data && response.data.remaining) {
+            const daysOfFoodRemaining = Math.ceil(response.data.remaining / (response.data.serving_size  * 2))
+            setMostRecentDaysRemaining(daysOfFoodRemaining);
             setMostRecentRemaining(response.data.remaining);
+            
           }
         } catch (error) {
           console.error('Error fetching most recent remaining:', error);
@@ -126,7 +129,8 @@
       }
   
       fetchMostRecentRemaining(); // Call the fetch function
-    
+
+
       async function fetchGlucoseData() {
         try {
           const response = await axios.get('/api/glucose-readings/all'); // Replace with your actual API endpoint
@@ -225,7 +229,7 @@
           const backdatedDatetime = new Date(`${selectedDate}T${selectedTime}:00Z`);
             
            // Subtract 215 from mostRecentRemaining
-          const newRemaining = mostRecentRemaining - 215;
+          const newRemaining = mostRecentRemaining - recentFoodEntry.serving_size;
           
             // Prepare the data to be sent to the server
           let requestData = {
@@ -302,7 +306,12 @@
           if (response.status === 201) {
             alert('Backdated glucose reading and related data stored successfully');
             setUpdatedFoodRemaining(newRemaining); // Update the updatedFoodRemaining state
-
+            // After a successful submission, fetch the most recent remaining value
+            const remainingResponse = await axios.get('/api/food/remaining-most-recent');
+            if (remainingResponse.data && remainingResponse.data.remaining) {
+                const daysOfFoodRemaining = (remainingResponse.data.remaining / (recentFoodEntry.serving_size * 2) )
+                setMostRecentDaysRemaining(daysOfFoodRemaining);
+            }
 
             // Reset the form and state variables
             setGlucoseReading('');
@@ -331,7 +340,8 @@
         const petName = 'Sadie';
         const servedAt = currentDatetime;
         const administeredOn = currentDatetime
-        
+        // Subtract 215 from mostRecentRemaining
+        const newRemaining = mostRecentRemaining - recentFoodEntry.serving_size;
 
         // Prepare the data to be sent to the server
         let requestData = {
@@ -340,6 +350,7 @@
           pet_name: petName,
           food: {
             served_at: servedAt,
+            remaining: newRemaining
           },
           insulin: {
             administered_on: administeredOn,
@@ -360,6 +371,7 @@
           requestData.food.serving_size = recentFoodEntry.serving_size;
         }
 
+        
         
         const response = await axios.post('/api/glucose-readings/submit', requestData);
 
@@ -662,7 +674,8 @@
     </LineChart>
   </div>
   <div className="food-remaining-container">
-        <p>Food Remaining: {mostRecentRemaining !== null ? mostRecentRemaining + ' grams' : 'Loading...'}</p>
+        <p><FontAwesomeIcon icon={faCalendarDays} style={{color: "#ffffff",}} /> There are {daysOfFoodRemaining} days of food remaining.</p>
+        {/* {daysOfFoodRemaining !== null ? daysOfFoodRemaining + ' days' : 'Loading...'} */}
       </div>
       </main>
       </div>
