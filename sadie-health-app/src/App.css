@@ -107,7 +107,7 @@ input[type="number"] {
 
 .label-container {
   display: flex;
-  align-items: center;
+  align-items: left;
   margin-bottom: 20px;
 }
 
@@ -380,7 +380,7 @@ input[type="number"] {
     align-items: flex-start; /* Align content to the left */
     justify-content: normal;
   }
-
+  
   /* Center the main content horizontally */
   .App-main {
     width: 100%;
@@ -422,11 +422,33 @@ input[type="number"] {
   .step-content {
     text-align: left;
     width: 38%;
-    white-space: normal; /* Allow text to wrap */
+     /* Allow text to wrap */
   }
   /* Center individual form elements */
   .label-container {
-    text-align: left;
+    flex-direction: column;
+    align-items: left;
+  }
+
+  .label-container label {
+    margin-bottom: 4px;
+  }
+  
+  .label-container input[type="number"] {
+    /* Your styling here */
+    -moz-appearance: textfield; /* Firefox */
+    -webkit-appearance: none;
+    appearance: textfield; /* Other browsers */
+    margin: 0;
+    height: 20px;
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
+    /* Add any other styles you need */
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   /* Adjust alignment for buttons */

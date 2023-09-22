@@ -93,7 +93,7 @@
       'Glucose',
       'Food',
       'Insulin',
-      'Review and Submit'
+      'Submit'
     ];
     const nextStep = () => {
       setCurrentStep(currentStep + 1);
@@ -702,6 +702,7 @@
                 min="1"
                 max="30"
                 inputMode='numeric'
+                pattern='[0-9]*'
                 
               />
           </div>
