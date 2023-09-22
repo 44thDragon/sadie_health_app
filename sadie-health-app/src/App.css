@@ -1,5 +1,6 @@
 /* src/App.css */
 
+
 body {
   margin: 0;
   padding: 0;
@@ -367,4 +368,88 @@ input[type="number"] {
 .step-content {
   flex-grow: 1;
   padding: 20px;
+}
+
+/* Define styles for mobile devices (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Center the entire content container horizontally */
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    align-items: flex-start; /* Align content to the left */
+    justify-content: normal;
+  }
+
+  /* Center the main content horizontally */
+  .App-main {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .app-title{
+    text-align: left;
+    padding-inline-start: 20%;
+    position:absolute;
+    
+    
+  }
+
+  /* Adjust alignment for the stepper and form container */
+  .stepper-container {
+    width: 100%;
+  }
+
+  .step-titles {
+    margin: 0;
+  }
+
+  .step-titles ul {
+    text-align: left;
+  }
+
+  .form-container {
+    width: 100%;
+  }
+
+  /* Center individual steps vertically and adjust their width */
+  .step {
+    width: 100%;
+    text-align: left;
+  }
+  /* Adjust alignment and text wrapping for .step-content */
+  .step-content {
+    text-align: left;
+    width: 38%;
+    white-space: normal; /* Allow text to wrap */
+  }
+  /* Center individual form elements */
+  .label-container {
+    text-align: left;
+  }
+
+  /* Adjust alignment for buttons */
+  button {
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  /* Center the recent glucose container */
+  .recent-glucose-container {
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Center the line chart container */
+  .line-chart-container {
+    width: 100%;
+    text-align: left;
+  }
+
+  /* Center the food remaining container */
+  .food-remaining-container {
+    width: 100%;
+    text-align: left;
+  }
 }
