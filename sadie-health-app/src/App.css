@@ -26,6 +26,7 @@ body {
   font-size: calc(10px + 2vmin);
   color: white;
   padding: 20px;
+  margin-bottom: 50px;
 }
 
 .App-main {
@@ -38,7 +39,7 @@ body {
   font-family: 'Comic Sans MS', cursive, sans-serif;
   font-size: 28px;
   text-align: center;
-  margin-bottom: 20px;
+  
 }
 
 /* Define the active button style */
@@ -49,6 +50,15 @@ body {
   padding: 10px 20px; /* Adjust padding as needed */
   cursor: pointer; /* Change cursor to pointer on hover */
 }
+.content-container {
+  display: flex; /* Use flexbox for centering */
+  flex-direction: column; /* Stack content vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  height: 100vh; /* Ensure the container takes up the full viewport height */
+  margin-top:10px
+}
+
 .food-remaining-container {
   margin-left: 40px;
 
@@ -322,4 +332,39 @@ input[type="number"] {
 
 .custom-tooltip p:first-child {
   font-weight: bold; /* Make the first paragraph (X value) bold */
+}
+
+
+
+.stepper-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align titles to the top */
+  width: 100%; /* Adjust the width as needed */
+  padding: 20px;
+  
+  border-right: 1px solid #ddd; /* Add a border to separate titles and content */
+}
+
+.step-titles {
+  margin-right: 20px; /* Add margin to separate titles from content */
+}
+
+.step-titles ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.step-titles li {
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.step-titles li.active {
+  font-weight: bold;
+}
+
+.step-content {
+  flex-grow: 1;
+  padding: 20px;
 }

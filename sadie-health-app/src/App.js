@@ -2,7 +2,7 @@
   import axios from 'axios';
   import './App.css';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
+  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays,faHeartPulse } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
 
   import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
   import { CartesianGrid } from 'recharts';
@@ -82,6 +82,26 @@
     const [updatedFoodRemaining, setUpdatedFoodRemaining] = useState(null);
     const [daysOfFoodRemaining, setMostRecentDaysRemaining] = useState(null);
 
+    //vertical stepper
+    const [currentStep, setCurrentStep] = useState(1);
+    const [name, setName] = useState('');
+    const [petName, setPetName] = useState('');
+    const [weight, setWeight] = useState('');
+
+
+    const stepTitles = [
+      'Glucose',
+      'Food',
+      'Insulin',
+      'Review and Submit'
+    ];
+    const nextStep = () => {
+      setCurrentStep(currentStep + 1);
+    };
+
+    const goToStep = (step) => {
+      setCurrentStep(step);
+    };
     // Assuming served_at is a Unix timestamp
 
     async function fetchMostRecentInsulin() {
@@ -456,19 +476,250 @@
         alert('An error occurred while storing glucose reading');
         console.error(error);
       }
+
+      if (currentStep === 1) {
+        // Handle name input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 2) {
+        // Handle pet name input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 3) {
+        // Handle weight input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 4) {
+        // Handle the final submission
+        // You can send data to the server or perform any other actions here
+        console.log('Final submission:', { name, petName, weight });
+      }
     };
     console.log({glucoseData})
 
     return (
+    <div className='content-container'>
       <div className="App">
         <header className="App-header">
           <h1 className="app-title">
             <span className="health-text">
-            <FontAwesomeIcon icon={faNotesMedical} /> Welcome to Sadie Health </span>
+            Sadie <FontAwesomeIcon icon={faHeartPulse} /> Health </span>
           </h1>
         </header>
         <main className="App-main">
-          <div className="form-container">
+           {/* Display the vertical stepper based on the current step */}
+            {/* Display the vertical stepper */}
+          <div className="stepper-container">
+            <div className="step-titles">
+              <ul>
+                {stepTitles.map((title, index) => (
+                  <li
+                    key={index}
+                    className={currentStep === index + 1 ? 'active' : ''}
+                    onClick={() => goToStep(index + 1)}
+                  >
+                    {title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="form-container">
+          <form onSubmit={isCheckboxChecked ? handleBackdatedGlucoseSubmit : handleSubmit}>
+            <div className="step-content">
+            {currentStep === 1 && (
+                <div className="step">
+                  
+                  <div className="label-container">
+                    <label>What was Sadie's glucose reading?</label>
+                    <input
+                      type="number"
+                      value={glucoseReading}
+                      onChange={(e) => setGlucoseReading(e.target.value)}
+                      min="0"
+                      max="600"
+                      required
+                      autoFocus
+                    /> mg/dl.
+                  </div>
+                  <div>
+                    <p>Backdating?
+                      <input
+                        type="checkbox"
+                        checked={isCheckboxChecked}
+                        onChange={() => setIsCheckboxChecked(!isCheckboxChecked)}
+                        id="mg-dl-checkbox"
+                      />
+                      <label htmlFor="mg-dl-checkbox"> </label>
+                    </p>
+                  </div>
+                  {isCheckboxChecked && (
+              <div className="date-time-inputs">
+                <div className="date-input">
+                  <label>Date:</label>
+                  {showDateInput ? (
+                    <>
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={handleDateInputChange}
+                        required
+                      />
+                      <button onClick={toggleCalendarPicker}>Clear Calendar</button>
+                    </>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="MM/DD/YYYY"
+                      onClick={toggleCalendarPicker}
+                      readOnly
+                    />
+                  )}
+                </div>
+                <div className="time-input">
+                  <label>Time:</label>
+                  <input
+                    type="time"
+                    value={selectedTime}
+                    onChange={handleTimeInputChange}
+                    required
+                  />
+                </div>
+              </div>
+            )}
+                  <button onClick={nextStep}>Next</button>
+                </div>
+              )}
+            {currentStep === 2 && (
+                <div className="step">
+                 
+                  {!isCheckboxChecked && (
+              <div className="question-container">
+                {recentFoodEntry && (
+                  <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
+                <div className="options-container">
+                <button
+                  id="yes-button"
+                  type="button"
+                  className={`option-button ${foodSameAsYesterday === 'yes' ? 'active-button' : ''}`}
+                  onClick={() => handleFoodOptionClick('yes')}
+                  
+                >
+                  Yes
+                </button>
+                <button
+                  id="no-button"
+                  type="button"
+                  className={`option-button ${foodSameAsYesterday === 'no' ? 'active-button' : ''}`}
+                  onClick={() => handleFoodOptionClick('no')}
+                  
+                >
+                  No
+                </button>
+
+                </div>
+              </div>
+              )}
+              {foodSameAsYesterday === 'no' && (
+                <div className="additional-fields">
+                  <p>What changed?</p>
+                  <div className="options-container">
+                    <button
+                      type="button"
+                      className={`option-button ${changedField === 'food' ? 'active-button' : ''}`}
+                      onClick={() => handleChangedFieldClick('food')}
+                    >
+                      Food
+                    </button>
+                    <button
+                      type="button"
+                      className={`option-button ${changedField === 'servingSize' ? 'active-button' : ''}`}
+                      onClick={() => handleChangedFieldClick('servingSize')}
+                    >
+                      Serving Size
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {changedField === 'food' && (
+                <div className="food-change-description">
+                  <label>Describe the food change: </label>
+                  <textarea
+                    className="food-change-description-input"
+                    value={foodChangeDescription}
+                    onChange={(event) => {
+                      const input = event.target.value.slice(0, 20);
+                      setFoodChangeDescription(
+                        input
+                          .toLowerCase()
+                          .split(' ')
+                          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                          .join(' ')
+                      );
+                    }}
+                    rows="1"
+                    cols="22"
+                    required
+                  />
+                </div>
+              )}
+
+              {changedField === 'servingSize' && (
+                <div className="food-serving-size-change-description">
+                  <label>Update serving size (grams): </label>
+                  <textarea
+                    className="food-serving-size-description-input"
+                    value={foodChangeDescription}
+                    onChange={(event) => {
+                      const input = event.target.value.slice(0, 20);
+                      setFoodChangeDescription(
+                        input
+                          .toLowerCase()
+                          .split(' ')
+                          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                          .join(' ')
+                      );
+                    }}
+                    rows="1"
+                    cols="8"
+                    required
+                  />
+                </div>
+              )}
+                  <button onClick={nextStep}>Next</button>
+                </div>
+              )}
+              {currentStep === 3 && (
+                <div className="step">
+                  {!isCheckboxChecked && mostRecentInsulin && (
+                <div>
+              <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
+            
+              <input
+                type="number"
+                value={insulinDose}
+                onChange={(event) => setInsulinDose(event.target.value)}
+                min="1"
+                max="30"
+                
+              />
+          </div>
+              )}
+                  <button onClick={nextStep}>Next</button>
+                </div>
+              )}
+
+              {currentStep === 4 && (
+                <div className="step">
+                   <button type="submit" className="paw-button">
+                <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
+              </button>
+                </div>
+              )}
+
+            
+
+          {/* <div className="form-container">
           <form onSubmit={isCheckboxChecked ? handleBackdatedGlucoseSubmit : handleSubmit}>
               <div className="label-container">
                 <label>What was Sadie's glucose reading?</label>
@@ -636,8 +887,10 @@
               )}
               <button type="submit" className="paw-button">
                 <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
-              </button>
+              </button> */}
+              </div>
             </form>
+          </div>
           </div>
         
           <div className="recent-glucose-container">
@@ -678,6 +931,7 @@
         {/* {daysOfFoodRemaining !== null ? daysOfFoodRemaining + ' days' : 'Loading...'} */}
       </div>
       </main>
+      </div>
       </div>
     );
   }
