@@ -713,10 +713,11 @@
                 pattern='[0-9]*'
                 
               />
+               <button className="nextStep" onClick={nextStep}>
+                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
           </div>
               )}
-                  <button className="nextStep" onClick={nextStep}>
-                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
+                 
                 </div>
               )}
 
