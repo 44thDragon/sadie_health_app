@@ -2,7 +2,7 @@
   import axios from 'axios';
   import './App.css';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays,faHeartPulse } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
+  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays,faHeartPulse, faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
 
   import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
   import { CartesianGrid } from 'recharts';
@@ -527,10 +527,10 @@
           <form onSubmit={isCheckboxChecked ? handleBackdatedGlucoseSubmit : handleSubmit}>
             <div className="step-content">
             {currentStep === 1 && (
-                <div className="step">
+                <div className={`step ${currentStep === 1 ? 'active' : ''}`}>
                   
-                  <div className="label-container">
-                    <label>What was Sadie's glucose reading?</label>
+                  <div className='step-1'>
+                    <p>What was Sadie's glucose reading?
                     <input
                       type="number"
                       value={glucoseReading}
@@ -539,9 +539,9 @@
                       max="600"
                       required
                       inputMode='numeric'
-                    /> mg/dl.
-                  </div>
-                  <div>
+                    /> mg/dl.</p>
+                
+                  
                     <p>Backdating?
                       <input
                         type="checkbox"
@@ -551,7 +551,7 @@
                       />
                       <label htmlFor="mg-dl-checkbox"> </label>
                     </p>
-                  </div>
+                 
                   {isCheckboxChecked && (
               <div className="date-time-inputs">
                 <div className="date-input">
@@ -586,11 +586,14 @@
                 </div>
               </div>
             )}
-                  <button onClick={nextStep}>Next</button>
+             <button className="nextStep" onClick={nextStep}>
+             <FontAwesomeIcon icon={faArrowRight} /> Next</button>
+            </div>
+                 
                 </div>
               )}
             {currentStep === 2 && (
-                <div className="step">
+                <div className={`step ${currentStep === 2 ? 'active' : ''}`}>
                  
                   {!isCheckboxChecked && (
               <div className="question-container">
@@ -686,11 +689,12 @@
                   />
                 </div>
               )}
-                  <button onClick={nextStep}>Next</button>
+                  <button className="nextStep" onClick={nextStep}>
+                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
                 </div>
               )}
               {currentStep === 3 && (
-                <div className="step">
+                <div className={`step ${currentStep === 3 ? 'active' : ''}`}>
                   {!isCheckboxChecked && mostRecentInsulin && (
                 <div>
               <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
@@ -707,15 +711,16 @@
               />
           </div>
               )}
-                  <button onClick={nextStep}>Next</button>
+                  <button className="nextStep" onClick={nextStep}>
+                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
                 </div>
               )}
 
               {currentStep === 4 && (
-                <div className="step">
-                   <button type="submit" className="paw-button">
+              <div className={`step ${currentStep === 4 ? 'active' : ''}`}>
+                <p>Thank you! <br/> <button type="submit" className="paw-button">
                 <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
-              </button>
+              </button></p>
                 </div>
               )}
               </div>
