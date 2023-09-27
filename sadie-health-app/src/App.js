@@ -11,6 +11,7 @@
 
 
 
+
   function App() {
     const [glucoseReading, setGlucoseReading] = useState('');
     const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
@@ -620,11 +621,10 @@
                 </button>
 
                 </div>
-              </div>
-              )}
-              {foodSameAsYesterday === 'no' && (
+                  
+                {foodSameAsYesterday === 'no' && (
                 <div className="additional-fields">
-                  <p>What changed?</p>
+                  <p className='addtionalp'>What changed?</p>
                   <div className="options-container">
                     <button
                       type="button"
@@ -689,8 +689,12 @@
                   />
                 </div>
               )}
-                  <button className="nextStep" onClick={nextStep}>
+                <button className="nextStep" onClick={nextStep}>
                   <FontAwesomeIcon icon={faArrowRight} /> Next</button>
+              </div>
+              )}
+              
+                  
                 </div>
               )}
               {currentStep === 3 && (
@@ -728,6 +732,9 @@
           </div>
           </div>
         
+   
+          <div className="section-divider"></div>
+
           <div className="recent-glucose-container">
           <button
           className="toggle-button"

@@ -12,7 +12,7 @@ body {
   background: linear-gradient(0deg, rgba(16,3,24,1) 0%, rgba(141,35,156,1) 100%);
   background-attachment: fixed;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#100318",endColorstr="#8d239c",GradientType=1);  */
-  color: #fff;
+  color: #333;
 }
 
 .App {
@@ -52,7 +52,12 @@ body {
 }
 
 
-
+/* Add styles for the section divider */
+.section-divider {
+  background-color: purple;
+  height: 2px; /* Adjust the height as needed */
+  margin-bottom: 20px; /* Adjust the margin as needed */
+}
 
 /* Stepper Container */
 
@@ -117,13 +122,14 @@ body {
 .active {
   border-radius: 4%;
   border-color: #8e44ad;
-  background-color: #8e44ad;
+  /*background-color: #8e44ad;*/
   /*background-color: #e1c9e5; */
   display: flex;
   margin: 0;
   width: 100%;
   height: 100%;
   align-self: center;
+  color:#333
 
   
 }
@@ -136,6 +142,13 @@ body {
 .active p{
   margin-top:10px;
   margin-left:30%;
+  align-self: center;
+}
+
+.active .addtionalp{
+  margin:0;
+  margin-top:10px;
+  margin-left:30px;
   align-self: center;
 }
 
@@ -152,9 +165,24 @@ body {
 
 .nextStep{
   height: 20px;
+  margin: 20px 0 0 10px;
   margin-top:20px;
+  width:60px;
+
+  border-color: #8e44ad;
+  border-radius: 10%;
+  border-width: .5px;
+  background-color: #fff;
+  font-weight: bold;
 }
 
+.date-time-inputs{
+  padding: 10px 0 0 0;
+}
+
+.date-time-inputs input{
+  margin: 10px 0 0 10px;
+}
 
 /* Define the active button style */
 .active-button {
@@ -175,7 +203,7 @@ body {
   display: block;
   border: none;
   background-color: transparent;
-  color: #fff;
+  color: #8e44ad;
   font-size: 24px;
   cursor: pointer;
   transition: color 0.3s; /* Add a smooth transition */
@@ -227,7 +255,7 @@ body {
 
 input[type="number"] {
   border: none;
-  border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #333;
   background-color: transparent;
   color: #fff;
   font-size: 16px;
@@ -244,38 +272,43 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+  
 }
 
 .options-container {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  color: #333;
+  margin: 10px 0px 0px 0px;
 }
 
 .option-button {
   margin: 0 5px;
   border: none;
   cursor: pointer;
+  color: #333;
   background-color: transparent;
-  color: #fff;
   font-size: 16px;
   padding: 10px 20px;
-  flex: 1;
+
 }
 
 
 
 
 
-.question-container,
-.additional-fields {
+.question-container{
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /*align-items: flex-start;*/
   margin-bottom: 20px;
 }
 
-
+.additional-fields{
+  display: inline;
+  margin:0;
+}
 
 /*below form content*/
 
@@ -303,6 +336,8 @@ input::-webkit-inner-spin-button {
 }
 
 .food-change-description {
+  padding: 0 0 0 0;
+  margin-left:10px;
   text-align: left;
 }
 
@@ -315,6 +350,8 @@ input::-webkit-inner-spin-button {
 }
 
 .food-serving-size-change-description {
+  padding: 10px 0 0 0;
+  margin-left:10px;
   text-align: left;
 }
 
@@ -416,7 +453,9 @@ input::-webkit-inner-spin-button {
   font-size: 14px; /* Y-axis label font size */
 }
 
- 
+ #no-button,#yes-button {
+  color:#333
+ }
 
 .custom-tooltip {
   background-color: #ff6b6b; /* Background color */
