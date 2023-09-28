@@ -208,6 +208,7 @@ body {
   cursor: pointer;
   transition: color 0.3s; /* Add a smooth transition */
   align-self: center;
+  margin-bottom:50px;
 }
 
 /* Additional styles for when button is clicked */
@@ -266,14 +267,19 @@ input[type="number"] {
   outline: none;
   appearance: textfield; /* Hide the default arrows */
   -moz-appearance: textfield; /* Firefox */
+  border-radius: 0;
+  -webkit-border-radius: 0;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+  border-radius:0;
+
   
 }
+
 
 .options-container {
   display: flex;
@@ -294,8 +300,13 @@ input::-webkit-inner-spin-button {
 
 }
 
-
-
+.insulin-container{
+  display: flex;
+  flex-direction: column;
+  /*align-items: flex-start;*/
+  margin: 10px 0 20px 0;
+  padding: 6px 0 0 0;
+}
 
 
 .question-container{
@@ -303,6 +314,7 @@ input::-webkit-inner-spin-button {
   flex-direction: column;
   /*align-items: flex-start;*/
   margin-bottom: 20px;
+  padding: 6px 0 0 0;
 }
 
 .question-container p{
@@ -487,6 +499,7 @@ input::-webkit-inner-spin-button {
     text-align: left;
     align-items: flex-start; /* Align content to the left */
     justify-content: normal;
+    
   }
   
   /* Center the main content horizontally */
@@ -506,15 +519,23 @@ input::-webkit-inner-spin-button {
     width:100%;
   }
 
-  .step .active{
-    width:100%;
+  .step.active{
+    width:310px;
+    margin-top:10px;
+  }
+  .step-1 input{
+    margin-bottom:10px;
+    
+  }
+  input {
+    border-radius: 0;
+  }
+  .active p{
+    margin-bottom:10px;
   }
 
   /* Adjust alignment for the stepper and form container */
-  .stepper-container {
-    width: 100%;
-    
-  }
+  
 
   .step-titles {
     margin: 0;
@@ -580,4 +601,8 @@ input::-webkit-inner-spin-button {
     width: 100%;
     text-align: left;
   }
+}
+
+#pawid{
+  margin-left:50px;
 }

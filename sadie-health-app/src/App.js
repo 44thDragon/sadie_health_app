@@ -700,7 +700,7 @@
               {currentStep === 3 && (
                 <div className={`step ${currentStep === 3 ? 'active' : ''}`}>
                   {!isCheckboxChecked && mostRecentInsulin && (
-                <div>
+                <div className='insulin-container'>
               <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
             
               <input
@@ -723,7 +723,7 @@
 
               {currentStep === 4 && (
               <div className={`step ${currentStep === 4 ? 'active' : ''}`}>
-                <p>Thank you! <br/> <button type="submit" className="paw-button">
+                <p id="pawid">Thank you! <br/> <button type="submit" className="paw-button">
                 <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
               </button></p>
                 </div>
