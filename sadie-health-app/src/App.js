@@ -1,4 +1,5 @@
   import React, { useState, useEffect } from 'react';
+  import HamburgerMenu from './HamburgerMenu';
   import axios from 'axios';
   import './App.css';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,10 +10,13 @@
   import { format } from 'date-fns';
 
 
-
-
-
   function App() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+      setMenuOpen(!menuOpen);
+    };
+    
     const [glucoseReading, setGlucoseReading] = useState('');
     const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
     const [changedField, setChangedField] = useState(null);
@@ -501,13 +505,21 @@
     return (
     <div className='content-container'>
       <div className="App">
-        <header className="App-header">
+      <header className={`App-header ${menuOpen ? 'menu-open' : ''}`}>
+          {/* Add the HamburgerMenu component here */}
+          <HamburgerMenu isOpen={menuOpen} toggleMenu={toggleMenu} />
           <h1 className="app-title">
             <span className="health-text">
             Sadie <FontAwesomeIcon icon={faHeartPulse} /> Health </span>
           </h1>
         </header>
         <main className="App-main">
+        <div className="pet-image-container">
+          <img className="petIcon" src="sadie.jpeg" alt="Image 1" />
+          <img className="petIcon" src="mongo.jpeg" alt="Image 2" />
+          <img className="petIcon" src="oakley.jpeg" alt="Image 3" />
+          <img className="petIcon" src="mango.jpeg" alt="Image 4" />
+        </div>
            {/* Display the vertical stepper based on the current step */}
             {/* Display the vertical stepper */}
           <div className="stepper-container">
