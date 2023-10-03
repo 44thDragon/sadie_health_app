@@ -17,6 +17,9 @@
     const handlePetImageClick = (imageName) => {
     setSelectedPet(imageName);
     };
+
+    
+
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -100,12 +103,12 @@
     const [weight, setWeight] = useState('');
 
 
-    const stepTitles = [
+    const [stepTitles, setStepTitles] = useState([
       'Glucose',
       'Food',
       'Insulin',
       'Submit'
-    ];
+    ]);
     const nextStep = () => {
       setCurrentStep(currentStep + 1);
     };
@@ -130,7 +133,14 @@
       }
     }
     
-    
+    useEffect(() => {
+      // Update step titles based on the selected pet
+      if (selectedPet === 'mongo.jpeg') {
+        setStepTitles(['Medication', 'Food', 'Weight', 'Submit']);
+      } else {
+        setStepTitles(['Glucose', 'Food', 'Insulin', 'Submit']);
+      }
+    }, [selectedPet]);
 
     useEffect(() => {
       document.title = 'Sadie Health';
