@@ -40,7 +40,7 @@ router.put('/update-remaining', (req, res) => {
 // Define the route for retrieving the most recent insulin entry
 router.get('/remaining-most-recent', (req, res) => {
     const query = `
-      SELECT remaining
+      SELECT remaining, serving_size
       FROM pet_food
       ORDER BY served_at DESC
       LIMIT 1

@@ -1,17 +1,22 @@
   import React, { useState, useEffect } from 'react';
+  import HamburgerMenu from './HamburgerMenu';
   import axios from 'axios';
   import './App.css';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-  import { faPaw, faNotesMedical } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
+  import { faPaw, faNotesMedical,faWeightScale, faCalendarDays,faHeartPulse, faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import faNotesMedical here
 
   import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from 'recharts';
   import { CartesianGrid } from 'recharts';
   import { format } from 'date-fns';
 
 
-
-
   function App() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+      setMenuOpen(!menuOpen);
+    };
+    
     const [glucoseReading, setGlucoseReading] = useState('');
     const [foodSameAsYesterday, setFoodSameAsYesterday] = useState(null);
     const [changedField, setChangedField] = useState(null);
@@ -80,8 +85,28 @@
 
     const [mostRecentRemaining, setMostRecentRemaining] = useState(null);
     const [updatedFoodRemaining, setUpdatedFoodRemaining] = useState(null);
+    const [daysOfFoodRemaining, setMostRecentDaysRemaining] = useState(null);
+
+    //vertical stepper
+    const [currentStep, setCurrentStep] = useState(1);
+    const [name, setName] = useState('');
+    const [petName, setPetName] = useState('');
+    const [weight, setWeight] = useState('');
 
 
+    const stepTitles = [
+      'Glucose',
+      'Food',
+      'Insulin',
+      'Submit'
+    ];
+    const nextStep = () => {
+      setCurrentStep(currentStep + 1);
+    };
+
+    const goToStep = (step) => {
+      setCurrentStep(step);
+    };
     // Assuming served_at is a Unix timestamp
 
     async function fetchMostRecentInsulin() {
@@ -118,7 +143,10 @@
         try {
           const response = await axios.get('/api/food/remaining-most-recent');
           if (response.data && response.data.remaining) {
+            const daysOfFoodRemaining = Math.ceil(response.data.remaining / (response.data.serving_size  * 2))
+            setMostRecentDaysRemaining(daysOfFoodRemaining);
             setMostRecentRemaining(response.data.remaining);
+            
           }
         } catch (error) {
           console.error('Error fetching most recent remaining:', error);
@@ -126,7 +154,8 @@
       }
   
       fetchMostRecentRemaining(); // Call the fetch function
-    
+
+
       async function fetchGlucoseData() {
         try {
           const response = await axios.get('/api/glucose-readings/all'); // Replace with your actual API endpoint
@@ -225,7 +254,7 @@
           const backdatedDatetime = new Date(`${selectedDate}T${selectedTime}:00Z`);
             
            // Subtract 215 from mostRecentRemaining
-          const newRemaining = mostRecentRemaining - 215;
+          const newRemaining = mostRecentRemaining - recentFoodEntry.serving_size;
           
             // Prepare the data to be sent to the server
           let requestData = {
@@ -302,7 +331,12 @@
           if (response.status === 201) {
             alert('Backdated glucose reading and related data stored successfully');
             setUpdatedFoodRemaining(newRemaining); // Update the updatedFoodRemaining state
-
+            // After a successful submission, fetch the most recent remaining value
+            const remainingResponse = await axios.get('/api/food/remaining-most-recent');
+            if (remainingResponse.data && remainingResponse.data.remaining) {
+                const daysOfFoodRemaining = (remainingResponse.data.remaining / (recentFoodEntry.serving_size * 2) )
+                setMostRecentDaysRemaining(daysOfFoodRemaining);
+            }
 
             // Reset the form and state variables
             setGlucoseReading('');
@@ -331,7 +365,8 @@
         const petName = 'Sadie';
         const servedAt = currentDatetime;
         const administeredOn = currentDatetime
-        
+        // Subtract 215 from mostRecentRemaining
+        const newRemaining = mostRecentRemaining - recentFoodEntry.serving_size;
 
         // Prepare the data to be sent to the server
         let requestData = {
@@ -340,6 +375,7 @@
           pet_name: petName,
           food: {
             served_at: servedAt,
+            remaining: newRemaining
           },
           insulin: {
             administered_on: administeredOn,
@@ -360,6 +396,7 @@
           requestData.food.serving_size = recentFoodEntry.serving_size;
         }
 
+        
         
         const response = await axios.post('/api/glucose-readings/submit', requestData);
 
@@ -444,41 +481,90 @@
         alert('An error occurred while storing glucose reading');
         console.error(error);
       }
+
+      if (currentStep === 1) {
+        // Handle name input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 2) {
+        // Handle pet name input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 3) {
+        // Handle weight input and validation
+        // You can add your logic here
+        nextStep();
+      } else if (currentStep === 4) {
+        // Handle the final submission
+        // You can send data to the server or perform any other actions here
+        console.log('Final submission:', { name, petName, weight });
+      }
     };
     console.log({glucoseData})
 
     return (
+    <div className='content-container'>
       <div className="App">
-        <header className="App-header">
+      <header className={`App-header ${menuOpen ? 'menu-open' : ''}`}>
+          {/* Add the HamburgerMenu component here */}
+          <HamburgerMenu isOpen={menuOpen} toggleMenu={toggleMenu} />
           <h1 className="app-title">
             <span className="health-text">
-            <FontAwesomeIcon icon={faNotesMedical} /> Welcome to Sadie Health </span>
+            Sadie <FontAwesomeIcon icon={faHeartPulse} /> Health </span>
           </h1>
         </header>
         <main className="App-main">
-          <div className="form-container">
+        <div className="pet-image-container">
+          <img className="petIcon" src="sadie.jpeg" alt="Image 1" />
+          <img className="petIcon" src="mongo.jpeg" alt="Image 2" />
+          <img className="petIcon" src="oakley.jpeg" alt="Image 3" />
+          <img className="petIcon" src="mango.jpeg" alt="Image 4" />
+        </div>
+           {/* Display the vertical stepper based on the current step */}
+            {/* Display the vertical stepper */}
+          <div className="stepper-container">
+            <div className="step-titles">
+              <ul>
+                {stepTitles.map((title, index) => (
+                  <li
+                    key={index}
+                    className={currentStep === index + 1 ? 'active' : ''}
+                    onClick={() => goToStep(index + 1)}
+                  >
+                    {title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="form-container">
           <form onSubmit={isCheckboxChecked ? handleBackdatedGlucoseSubmit : handleSubmit}>
-              <div className="label-container">
-                <label>What was Sadie's glucose reading?</label>
-                <input
-                  type="number"
-                  value={glucoseReading}
-                  onChange={handleGlucoseChange}
-                  min="0"
-                  max="600"
-                  required
-                  autoFocus
-                /> mg/dl. </div>
-                <div> <p>Backdating? 
-                <input
-                type="checkbox"
-                checked={isCheckboxChecked}
-                onChange={handleCheckboxChange}
-                id="mg-dl-checkbox"
-              />
-              <label htmlFor="mg-dl-checkbox"> </label>
-                </p>
-              </div>
+            <div className="step-content">
+            {currentStep === 1 && (
+                <div className={`step ${currentStep === 1 ? 'active' : ''}`}>
+                  
+                  <div className='step-1'>
+                    <p>What was Sadie's glucose reading?
+                    <input
+                      type="number"
+                      value={glucoseReading}
+                      onChange={(e) => setGlucoseReading(e.target.value)}
+                      min="0"
+                      max="600"
+                      required
+                      inputMode='numeric'
+                    /> mg/dl.</p>
+                
+                  
+                    <p>Backdating?
+                      <input
+                        type="checkbox"
+                        checked={isCheckboxChecked}
+                        onChange={() => setIsCheckboxChecked(!isCheckboxChecked)}
+                        id="mg-dl-checkbox"
+                      />
+                      <label htmlFor="mg-dl-checkbox"> </label>
+                    </p>
+                 
                   {isCheckboxChecked && (
               <div className="date-time-inputs">
                 <div className="date-input">
@@ -513,8 +599,16 @@
                 </div>
               </div>
             )}
-
-              {!isCheckboxChecked && (
+             <button className="nextStep" onClick={nextStep}>
+             <FontAwesomeIcon icon={faArrowRight} /> Next</button>
+            </div>
+                 
+                </div>
+              )}
+            {currentStep === 2 && (
+                <div className={`step ${currentStep === 2 ? 'active' : ''}`}>
+                 
+                  {!isCheckboxChecked && (
               <div className="question-container">
                 {recentFoodEntry && (
                   <p>The previous meal was {recentFoodEntry.serving_size}G of {recentFoodEntry.brand}, is this the same?</p>)}
@@ -539,11 +633,10 @@
                 </button>
 
                 </div>
-              </div>
-              )}
-              {foodSameAsYesterday === 'no' && (
+                  
+                {foodSameAsYesterday === 'no' && (
                 <div className="additional-fields">
-                  <p>What changed?</p>
+                  <p className='addtionalp'>What changed?</p>
                   <div className="options-container">
                     <button
                       type="button"
@@ -608,8 +701,18 @@
                   />
                 </div>
               )}
-              {!isCheckboxChecked && mostRecentInsulin && (
-                <div>
+                <button className="nextStep" onClick={nextStep}>
+                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
+              </div>
+              )}
+              
+                  
+                </div>
+              )}
+              {currentStep === 3 && (
+                <div className={`step ${currentStep === 3 ? 'active' : ''}`}>
+                  {!isCheckboxChecked && mostRecentInsulin && (
+                <div className='insulin-container'>
               <label>If the insulin dose of {mostRecentInsulin.units} units of {mostRecentInsulin.insulin_brand} was not administered, how much was?</label>
             
               <input
@@ -618,16 +721,33 @@
                 onChange={(event) => setInsulinDose(event.target.value)}
                 min="1"
                 max="30"
+                inputMode='numeric'
+                pattern='[0-9]*'
                 
               />
+               <button className="nextStep" onClick={nextStep}>
+                  <FontAwesomeIcon icon={faArrowRight} /> Next</button>
           </div>
               )}
-              <button type="submit" className="paw-button">
+                 
+                </div>
+              )}
+
+              {currentStep === 4 && (
+              <div className={`step ${currentStep === 4 ? 'active' : ''}`}>
+                <p id="pawid">Thank you! <br/> <button type="submit" className="paw-button">
                 <FontAwesomeIcon icon={faPaw} className="paw-icon" /> Submit
-              </button>
+              </button></p>
+                </div>
+              )}
+              </div>
             </form>
           </div>
+          </div>
         
+   
+          <div className="section-divider"></div>
+
           <div className="recent-glucose-container">
           <button
           className="toggle-button"
@@ -662,9 +782,11 @@
     </LineChart>
   </div>
   <div className="food-remaining-container">
-        <p>Food Remaining: {mostRecentRemaining !== null ? mostRecentRemaining + ' grams' : 'Loading...'}</p>
+        <p><FontAwesomeIcon icon={faCalendarDays} style={{color: "#ffffff",}} /> There are {daysOfFoodRemaining} days of food remaining.</p>
+        {/* {daysOfFoodRemaining !== null ? daysOfFoodRemaining + ' days' : 'Loading...'} */}
       </div>
       </main>
+      </div> 
       </div>
     );
   }
