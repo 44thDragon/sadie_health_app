@@ -73,6 +73,13 @@ body {
   border-radius: 50%;
 
 }
+.petIcon.selected {
+  /* Styles for selected pet image with a purple border */
+  border: 3px solid purple;
+  padding-left:0px;
+  padding-right: 0px;
+  border-radius: 50%;
+}
 /* Stepper Container */
 
 .stepper-container {

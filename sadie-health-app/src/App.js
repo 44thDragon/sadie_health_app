@@ -11,6 +11,12 @@
 
 
   function App() {
+      // State variable to keep track of the selected pet image
+    const [selectedPet, setSelectedPet] = useState('sadie.jpeg');
+      // Event handler to update the selected pet when a pet image is clicked
+    const handlePetImageClick = (imageName) => {
+    setSelectedPet(imageName);
+    };
     const [menuOpen, setMenuOpen] = useState(false);
 
     const toggleMenu = () => {
@@ -515,11 +521,32 @@
         </header>
         <main className="App-main">
         <div className="pet-image-container">
-          <img className="petIcon" src="sadie.jpeg" alt="Image 1" />
-          <img className="petIcon" src="mongo.jpeg" alt="Image 2" />
-          <img className="petIcon" src="oakley.jpeg" alt="Image 3" />
-          <img className="petIcon" src="mango.jpeg" alt="Image 4" />
-        </div>
+            {/* Render each pet image with an onClick handler */}
+            <img
+              className={`petIcon ${selectedPet === 'sadie.jpeg' ? 'selected' : ''}`}
+              src="sadie.jpeg"
+              alt="Image 1"
+              onClick={() => handlePetImageClick('sadie.jpeg')}
+            />
+            <img
+              className={`petIcon ${selectedPet === 'mongo.jpeg' ? 'selected' : ''}`}
+              src="mongo.jpeg"
+              alt="Image 2"
+              onClick={() => handlePetImageClick('mongo.jpeg')}
+            />
+            <img
+              className={`petIcon ${selectedPet === 'oakley.jpeg' ? 'selected' : ''}`}
+              src="oakley.jpeg"
+              alt="Image 3"
+              onClick={() => handlePetImageClick('oakley.jpeg')}
+            />
+            <img
+              className={`petIcon ${selectedPet === 'mango.jpeg' ? 'selected' : ''}`}
+              src="mango.jpeg"
+              alt="Image 4"
+              onClick={() => handlePetImageClick('mango.jpeg')}
+            />
+          </div>
            {/* Display the vertical stepper based on the current step */}
             {/* Display the vertical stepper */}
           <div className="stepper-container">
